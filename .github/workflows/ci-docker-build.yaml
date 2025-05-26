@@ -3,12 +3,12 @@ run-name: Unbound Container Docker Build Check ✅
 on:
   push:
     branches:
-      - "main"
+#      - "main"
       - "dev"
   pull_request:
     branches: 
       - "main"
-      - "dev"
+#      - "dev"
 
 jobs:
   CI-Docker-Build-Check:
@@ -42,5 +42,5 @@ jobs:
         uses: docker/build-push-action@v6.17.0
         with:
           context: ./docker
-          platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7
+          platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
           push: false
