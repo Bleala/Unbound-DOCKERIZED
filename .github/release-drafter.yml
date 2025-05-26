@@ -30,8 +30,8 @@ categories:
     labels: 
       - 'maintenance'
 template: |
-  # 🎉 Vdirsyncer-DOCKERIZED Release $RESOLVED_VERSION!
-  A new version of Vdirsyncer-DOCKERIZED is available!
+  # 🎉 Unbound-DOCKERIZED Release $RESOLVED_VERSION!
+  A new version of Unbound-DOCKERIZED is available!
 
   ## 📰 What's New/Changed
 
@@ -39,14 +39,11 @@ template: |
 
   ## 📦 Download
   Download at Docker Hub: 
-  https://hub.docker.com/r/bleala/vdirsyncer
+  https://hub.docker.com/r/bleala/unbound
 
   Download at Github Container Registry:
-  https://github.com/Bleala/Vdirsyncer-DOCKERIZED/pkgs/container/vdirsyncer
+  https://github.com/Bleala/Unbound-DOCKERIZED/pkgs/container/unbound
 
   ## 🏷️ Versions
-  * Vdirsyncer 
+  * Unbound 
   * Alpine 
-  * Python 
-  * Pip 
-  * Pipx 
