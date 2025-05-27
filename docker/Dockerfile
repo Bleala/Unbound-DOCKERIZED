@@ -79,7 +79,7 @@ RUN set -x && \
       --enable-subnet \
       --enable-tfo-server \
       --enable-tfo-client \
-      --disable-static && \
+      --enable-static=no && \
     # Compile and install Unbound
     make && \
     make install
