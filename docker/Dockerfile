@@ -158,13 +158,10 @@ COPY --from=unbound-build /opt/unbound /opt/unbound
 # Copy the Unbound configuration file
 COPY --from=unbound-build /etc/unbound /etc/unbound
 
-RUN /opt/unbound/sbin/unbound-anchor -a "/etc/unbound/root.key"
-
 # Copy Files
 COPY files /files/
 
-# Create trust anchor, Chown/Chmod the Unbound directories and create example configuration
-    # Chown/Chmod the Unbound directories
+# Chown/Chmod the Unbound directories and create example configuration
 RUN chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /opt/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /etc/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /files && \
