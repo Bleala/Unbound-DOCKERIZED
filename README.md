@@ -2,7 +2,7 @@
 [![Docker Image Version](https://img.shields.io/docker/v/bleala/unbound/latest?style=flat&label=Version)](https://hub.docker.com/r/bleala/unbound)
 [![Docker Stars](https://img.shields.io/docker/stars/bleala/unbound?style=flat&label=Docker%20Stars)](https://hub.docker.com/r/bleala/unbound)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bleala/unbound?style=flat&label=Docker%20Pulls)](https://hub.docker.com/r/bleala/unbound)
-[![CI Status](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/ci-docker-build.yaml/badge.svg)](https://github.com/Bleala/Unbound-DOCKERIZED/)
+[![CI - Docker Build Check](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/ci-docker-build.yaml/badge.svg?branch=main)](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/ci-docker-build.yaml)
 
 Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!
 
