@@ -161,8 +161,10 @@ COPY --from=unbound-build /etc/unbound /etc/unbound
 # Copy Files
 COPY files /files/
 
-# Chown/Chmod the Unbound directories and create example configuration
-RUN chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /opt/unbound && \
+# Create trust anchor, Chown/Chmod the Unbound directories and create example configuration
+RUN /opt/unbound/sbin/unbound-anchor -a "/etc/unbound/root.key" && \
+    # Chown/Chmod the Unbound directories
+    chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /opt/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /etc/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /files && \
     # Set permissions for the Unbound directories
