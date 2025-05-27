@@ -1,0 +1,41 @@
+networks:
+  unbound:
+    name: unbound
+    driver: bridge
+
+services:
+  # Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!
+  # https://hub.docker.com/r/bleala/unbound
+  # https://github.com/Bleala/Unbound-DOCKERIZED
+  unbound:
+    image: bleala/unbound:latest
+    container_name: unbound
+    hostname: unbound
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      # Optional: set your timezone, for correct container and log time, default to Europe/Vienna
+      TZ: Europe/Vienna
+      # Optional: set different Unbound configuration file location, default to /etc/unbound/unbound.conf
+      # If you use the "username" config option, set it to "unbound" and make sure the Unbound user (1000:1000) can read this file
+      UNBOUND_CONFIG: /etc/unbound/unbound.conf
+    env_file:
+      - path: .env
+        required: false
+    networks:
+      unbound:
+    ports:
+      - target: 53
+        published: 53
+        protocol: tcp
+        mode: host
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+    volumes:
+      - type: bind
+        source: /path/to/unbound.conf
+        target: /etc/unbound/unbound.conf
+        read_only: true
