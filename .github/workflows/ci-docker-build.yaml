@@ -52,5 +52,6 @@ jobs:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: false
-          cache-from: type=registry,ref=${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.GHCR_TOKEN }}:buildcache
-          cache-to: type=registry,ref=${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.GHCR_TOKEN }}:buildcache,mode=max
+          tags: ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
+          cache-from: type=registry,ref=${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache,mode=max
