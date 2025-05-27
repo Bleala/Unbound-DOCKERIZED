@@ -4,6 +4,18 @@ on:
   push:
     tags:
       - "*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Custom tag (optional, defaults to latest)'
+        required: false
+        default: 'latest'
+        type: string
+      branch:
+        description: 'Custom branch (optional, defaults to main)'
+        required: false
+        default: 'main'
+        type: string 
 
 jobs:
   Unbound-Deployment-Production:
