@@ -1,0 +1,6 @@
+services:
+  unbound:
+    image: bleala/unbound:dev
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
