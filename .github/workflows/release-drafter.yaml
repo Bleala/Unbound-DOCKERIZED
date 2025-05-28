@@ -38,5 +38,6 @@ jobs:
       # Drafts your next Release notes as Pull Requests are merged into "master"
       # https://github.com/marketplace/actions/release-drafter
       - uses: release-drafter/release-drafter@v6.1.0
+        id: release-drafter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
