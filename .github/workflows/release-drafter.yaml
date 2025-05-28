@@ -39,4 +39,4 @@ jobs:
       # https://github.com/marketplace/actions/release-drafter
       - uses: release-drafter/release-drafter@v6.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_DRAFTER_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
