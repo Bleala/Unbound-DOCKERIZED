@@ -169,6 +169,36 @@ jobs:
 
           echo "Cleanup successful."
 
+      # https://github.com/actions/attest-build-provenance
+      - name: Generate Artifact Attestation For Docker Hub
+        id: dockerhub-attest-build-provenance
+        uses: actions/attest-build-provenance@v2.3.0
+        with:
+          subject-name: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
+          push-to-registry: true
+          show-summary: true
+
+      # https://github.com/actions/attest-build-provenance
+      - name: Generate Artifact Attestation For GHCR
+        id: ghcr-attest-build-provenance
+        uses: actions/attest-build-provenance@v2.3.0
+        with:
+          subject-name: ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
+          push-to-registry: true
+          show-summary: true
+
+      # https://github.com/actions/attest-build-provenance
+      - name: Generate Artifact Attestation For Gitea
+        id: gitea-attest-build-provenance
+        uses: actions/attest-build-provenance@v2.3.0
+        with:
+          subject-name: ${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
+          push-to-registry: true
+          show-summary: true
+
       # https://github.com/niniyas/ntfy-action
       - name: Ntfy Notification
         id: ntfy-notification
