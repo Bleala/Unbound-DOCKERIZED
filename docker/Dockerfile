@@ -64,7 +64,11 @@ RUN set -x && \
     # Configure Unbound
     ./configure \
       --prefix=/opt/unbound \
-      --sysconfdir=/etc \
+      --with-conf-file=/etc/unbound/unbound.conf \
+      --with-run-dir=/var/unbound \
+      --with-chroot-dir=/var/unbound \
+      --with-pidfile=/var/unbound/unbound.pid \
+      --with-rootkey-file=/var/unbound/root.key \
       --with-username="${UNBOUND_USER}" \
       --with-pthreads \
       --with-ssl \
@@ -79,10 +83,20 @@ RUN set -x && \
       --enable-subnet \
       --enable-tfo-server \
       --enable-tfo-client \
-      --enable-static=no && \
+      --disable-static && \
     # Compile and install Unbound
     make && \
     make install
+
+# Set workdir to var
+WORKDIR /var/unbound
+
+# https://unbound.docs.nlnetlabs.nl/en/latest/manpages/unbound-anchor.html
+# Download the root.hints and generate the root.key
+RUN curl -sSL https://www.internic.net/domain/named.root -o /var/unbound/root.hints && \
+    /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || true && \
+    # Move unbound.conf to unbound.conf.default
+    mv /etc/unbound/unbound.conf /etc/unbound/unbound.conf.default
   
 # Set workdir to the tmp directory
 WORKDIR /tmp
@@ -115,6 +129,8 @@ ENV PATH="/opt/unbound/sbin:${PATH}" \
     TZ="Europe/Vienna" \
     # Set Unbound configuration file
     UNBOUND_CONFIG="/etc/unbound/unbound.conf" \
+    # Set Unbound Root Key File
+    UNBOUND_ROOT_FILE="/var/unbound/root.key" \
     # Set Unbound user and group
     UNBOUND_USER="${UNBOUND_USER}"
 
@@ -134,7 +150,7 @@ LABEL org.opencontainers.image.authors="Bleala" \
       org.opencontainers.image.source="https://github.com/Bleala/Unbound-DOCKERIZED"
 
 # Set workdir
-WORKDIR /etc/unbound
+WORKDIR /var/unbound
 
 # Install runtime dependencies
 RUN apk update && \
@@ -148,7 +164,7 @@ RUN apk update && \
       protobuf-c=~1.5.0 \
       tzdata=~2025b
 
-# Add Unbound user and group and Chown the Unbound directories
+# Add Unbound user and group
 RUN addgroup -g "${UNBOUND_USER_GID}" -S "${UNBOUND_USER}" && \
     adduser -u "${UNBOUND_USER_UID}" -S -D -H -G "${UNBOUND_USER}" "${UNBOUND_USER}"
 
@@ -158,20 +174,18 @@ COPY --from=unbound-build /opt/unbound /opt/unbound
 # Copy the Unbound configuration file
 COPY --from=unbound-build /etc/unbound /etc/unbound
 
-# Copy Files
-COPY files /files/
+# Copy the Unbound run directory
+COPY --from=unbound-build /var/unbound /var/unbound
 
-# Chown/Chmod the Unbound directories and create example configuration
+# Copy Files
+COPY files /files
+
+# Set permissions for Unbound directories and scripts
 RUN chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /opt/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /etc/unbound && \
+    chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /var/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /files && \
-    # Set permissions for the Unbound directories
-    chmod -R 700 /opt/unbound && \
-    chmod -R 700 /etc/unbound && \
-    chmod -R 700 /files && \
-    chmod +x /files/scripts/start.sh && \
-    # Move the default Unbound configuration file
-    mv /etc/unbound/unbound.conf /etc/unbound/unbound.conf.default
+    chmod +x /files/scripts/*.sh 
 
 # DNS Ports
 EXPOSE 53/tcp
