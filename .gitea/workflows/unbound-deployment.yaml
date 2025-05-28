@@ -101,7 +101,7 @@ jobs:
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Pre Release Image For Scanning
-        uses: docker/build-push-action@v6.17.0
+        uses: docker/build-push-action@v6.18.0
         with:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
@@ -134,7 +134,7 @@ jobs:
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Final Image
-        uses: docker/build-push-action@v6.17.0
+        uses: docker/build-push-action@v6.18.0
         with:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
