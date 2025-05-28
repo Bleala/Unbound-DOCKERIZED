@@ -86,14 +86,15 @@ jobs:
 
       # https://github.com/regclient/regclient
       - name: Clean Up 'ci-docker-build' Image
-        if: success()
+        if: always()
         run: |
           echo "Installing regctl."
           curl -sL "https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64" -o regctl
           chmod +x ./regctl
 
           # regctl automatically uses the Docker Login credentials from the Docker Login Action
+          # for GHCR image delete is required
           echo "Deleting ci-docker-build tag from GHCR."
-          ./regctl tag rm ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
+          ./regctl image delete ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
 
           echo "Cleanup successful."
