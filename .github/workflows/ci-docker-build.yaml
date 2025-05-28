@@ -27,6 +27,10 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ./docker/Dockerfile
+      
+      # https://github.com/marketplace/actions/shell-linter
+      - name: Lint Shell Scripts
+        uses: Azbagheri/shell-linter@v0.8.0
 
       # https://github.com/marketplace/actions/docker-setup-qemu
       - name: Set Up QEMU
@@ -44,7 +48,6 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      # This step is only executed for PRs, not for pushes to the main branch (without cache)
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build Docker Image For Validation
         uses: docker/build-push-action@v6.17.0

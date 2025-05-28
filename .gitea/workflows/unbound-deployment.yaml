@@ -6,14 +6,14 @@ on:
       - "*.*.*"
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Custom tag (optional, defaults to latest)'
-        required: false
-        default: 'latest'
+      version:
+        description: 'Specify the version to build and tag (default: 1.23.0)'
+        required: true
+        default: '1.23.0'
         type: string
       branch:
-        description: 'Custom branch (optional, defaults to main)'
-        required: false
+        description: 'Specify the branch to build from (default: main)'
+        required: true
         default: 'main'
         type: string 
 
@@ -34,6 +34,10 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ./docker/Dockerfile
+
+      # https://github.com/marketplace/actions/shell-linter
+      - name: Lint Shell Scripts
+        uses: Azbagheri/shell-linter@v0.8.0
 
       # https://github.com/marketplace/actions/docker-hub-description
       - name: Docker Hub Description
