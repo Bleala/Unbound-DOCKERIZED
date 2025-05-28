@@ -180,14 +180,14 @@ jobs:
           echo "Cleanup successful."
 
       # https://github.com/actions/attest-build-provenance
-      - name: Generate Artifact Attestation For Docker Hub
-        id: dockerhub-attest-build-provenance
-        uses: actions/attest-build-provenance@v2.3.0
-        with:
-          subject-name: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
-          push-to-registry: true
-          show-summary: true
+      # - name: Generate Artifact Attestation For Docker Hub
+      #   id: dockerhub-attest-build-provenance
+      #   uses: actions/attest-build-provenance@v2.3.0
+      #   with:
+      #     subject-name: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
+      #     subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
+      #     push-to-registry: true
+      #     show-summary: true
 
       # https://github.com/actions/attest-build-provenance
       - name: Generate Artifact Attestation For GHCR
