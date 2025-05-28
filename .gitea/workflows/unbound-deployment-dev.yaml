@@ -21,10 +21,10 @@ env:
   IMAGE_NAME: unbound
   REGISTRY_DOCKERHUB: docker.io
   REGISTRY_GHCR: ghcr.io
-  REGISTRY_GITEA: ${{ secrets.LOCAL_URL }}
-  USERNAME_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME }}
-  USERNAME_GHCR: ${{ secrets.GHCR_USERNAME }}
-  USERNAME_GITEA: ${{ secrets.LOCAL_USERNAME }}
+  REGISTRY_GITEA: ${{ secrets.REGISTRY_GITEA }}
+  USERNAME_DOCKERHUB: ${{ secrets.USERNAME_DOCKERHUB }}
+  USERNAME_GHCR: ${{ secrets.USERNAME_GHCR }}
+  USERNAME_GITEA: ${{ secrets.USERNAME_GITEA }}
 
 jobs:
   Unbound-Deployment-Development:
@@ -59,7 +59,7 @@ jobs:
         uses: peter-evans/dockerhub-description@v4.0.2
         with:
           username: ${{ env.USERNAME_DOCKERHUB }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.TOKEN_DOCKERHUB }}
           repository: ${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
           short-description: "Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!"
 
@@ -96,7 +96,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY_DOCKERHUB }}
           username: ${{ env.USERNAME_DOCKERHUB }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.TOKEN_DOCKERHUB }}
 
       # https://github.com/marketplace/actions/docker-login
       - name: Login To GitHub Container Registry
@@ -105,7 +105,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY_GHCR }}
           username: ${{ env.USERNAME_GHCR }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.TOKEN_GHCR }}
 
       # https://github.com/marketplace/actions/docker-login
       - name: Login To Gitea
@@ -114,7 +114,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY_GITEA }}
           username: ${{ env.USERNAME_GITEA }}
-          password: ${{ secrets.LOCAL_TOKEN }}
+          password: ${{ secrets.TOKEN_GITEA }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Pre Release Dev Image For Scanning
