@@ -100,6 +100,17 @@ jobs:
       - name: Upload Trivy scan results to GitHub Security tab
         id: upload-trivy-results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
         with:
           sarif_file: trivy-results.sarif
+
+      # https://github.com/marketplace/actions/ghcr-io-cleanup-action
+      - name: GHCR Clean Up 'ci-docker-build' Image Tag
+        id: ghcr-clean-up-ci-docker-build
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: ${{ env.USERNAME_GHCR }}
+          packages: ${{ env.IMAGE_NAME }}
+          delete-tags: ci-docker-build
+          delete-untagged: true
