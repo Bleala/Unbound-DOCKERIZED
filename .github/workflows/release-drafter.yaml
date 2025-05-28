@@ -18,9 +18,6 @@ on:
       - reopened
       - synchronize
 
-permissions:
-  contents: read
-
 jobs:
   Draft-Release-Notes:
     name: Draft Release Notes
