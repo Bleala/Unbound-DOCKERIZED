@@ -70,7 +70,8 @@ jobs:
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
-          format: sarif
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
           output: trivy-results.sarif
           exit-code: '1'
           ignore-unfixed: true
