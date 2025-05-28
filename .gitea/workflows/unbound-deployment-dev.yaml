@@ -159,7 +159,7 @@ jobs:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          provenance: true
+          provenance: false
           sbom: true
           tags: |
             ${{ steps.metadata.outputs.tags }}
@@ -180,36 +180,6 @@ jobs:
           ./regctl tag rm ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release-dev
 
           echo "Cleanup successful."
-
-      # https://github.com/actions/attest-build-provenance
-      # - name: Generate Artifact Attestation For Docker Hub
-      #   id: dockerhub-attest-build-provenance
-      #   uses: actions/attest-build-provenance@v2.3.0
-      #   with:
-      #     subject-name: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
-      #     subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
-      #     push-to-registry: true
-      #     show-summary: true
-
-      # https://github.com/actions/attest-build-provenance
-      # - name: Generate Artifact Attestation For GHCR
-      #   id: ghcr-attest-build-provenance
-      #   uses: actions/attest-build-provenance@v2.3.0
-      #   with:
-      #     subject-name: ${{ env.REGISTRY_GHCR }}/${{ env.USERNAME_GHCR }}/${{ env.IMAGE_NAME }}
-      #     subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
-      #     push-to-registry: true
-      #     show-summary: true
-
-      # https://github.com/actions/attest-build-provenance
-      # - name: Generate Artifact Attestation For Gitea
-      #   id: gitea-attest-build-provenance
-      #   uses: actions/attest-build-provenance@v2.3.0
-      #   with:
-      #     subject-name: ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}
-      #     subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
-      #     push-to-registry: true
-      #     show-summary: true
 
       # https://github.com/niniyas/ntfy-action
       - name: Ntfy Notification
