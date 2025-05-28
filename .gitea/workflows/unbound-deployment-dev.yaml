@@ -17,6 +17,11 @@ on:
         default: 'dev'
         type: string 
 
+env:
+  IMAGE_NAME: unbound
+  REGISTRY_GHCR: ghcr.io
+  USERNAME_GHCR: bleala
+
 jobs:
   Unbound-Deployment-Development:
     name: Unbound Deployment Development
