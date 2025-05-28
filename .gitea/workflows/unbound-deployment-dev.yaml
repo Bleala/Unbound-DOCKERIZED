@@ -159,6 +159,8 @@ jobs:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
+          provenance: true
+          sbom: true
           tags: |
             ${{ steps.metadata.outputs.tags }}
           cache-from: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache
@@ -200,14 +202,14 @@ jobs:
       #     show-summary: true
 
       # https://github.com/actions/attest-build-provenance
-      - name: Generate Artifact Attestation For Gitea
-        id: gitea-attest-build-provenance
-        uses: actions/attest-build-provenance@v2.3.0
-        with:
-          subject-name: ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
-          push-to-registry: true
-          show-summary: true
+      # - name: Generate Artifact Attestation For Gitea
+      #   id: gitea-attest-build-provenance
+      #   uses: actions/attest-build-provenance@v2.3.0
+      #   with:
+      #     subject-name: ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}
+      #     subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
+      #     push-to-registry: true
+      #     show-summary: true
 
       # https://github.com/niniyas/ntfy-action
       - name: Ntfy Notification
