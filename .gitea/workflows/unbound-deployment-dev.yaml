@@ -38,6 +38,8 @@ jobs:
       # https://github.com/marketplace/actions/shell-linter
       - name: Lint Shell Scripts
         uses: Azbagheri/shell-linter@v0.8.0
+        with:
+          exclude-paths: "LICENSE,docker/Dockerfile"
 
       # https://github.com/marketplace/actions/docker-hub-description
       - name: Docker Hub Description
