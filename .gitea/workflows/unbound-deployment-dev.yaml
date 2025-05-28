@@ -19,8 +19,12 @@ on:
 
 env:
   IMAGE_NAME: unbound
+  REGISTRY_DOCKERHUB: docker.io
   REGISTRY_GHCR: ghcr.io
-  USERNAME_GHCR: bleala
+  REGISTRY_GITEA: ${{ secrets.LOCAL_URL }}
+  USERNAME_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME }}
+  USERNAME_GHCR: ${{ secrets.GHCR_USERNAME }}
+  USERNAME_GITEA: ${{ secrets.LOCAL_USERNAME }}
 
 jobs:
   Unbound-Deployment-Development:
@@ -54,9 +58,9 @@ jobs:
         id: dockerhub-description
         uses: peter-evans/dockerhub-description@v4.0.2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ env.USERNAME_DOCKERHUB }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          repository: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
           short-description: "Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!"
 
       # https://github.com/marketplace/actions/docker-metadata-action
@@ -66,9 +70,9 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
-            ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
-            ${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+            ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY_GHCR }}/${{ env.USERNAME_GHCR }}/${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}
           flavor: |
             latest=false
           # generate Docker tags based on the following events/attributes
@@ -90,7 +94,7 @@ jobs:
         id: docker-login-dockerhub
         uses: docker/login-action@v3.4.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ env.USERNAME_DOCKERHUB }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # https://github.com/marketplace/actions/docker-login
@@ -98,8 +102,8 @@ jobs:
         id: docker-login-ghcr
         uses: docker/login-action@v3.4.0
         with:
-          registry: ${{ secrets.GHCR_URL }}
-          username: ${{ secrets.GHCR_USERNAME }}
+          registry: ${{ env.REGISTRY_GHCR }}
+          username: ${{ env.USERNAME_GHCR }}
           password: ${{ secrets.GHCR_TOKEN }}
 
       # https://github.com/marketplace/actions/docker-login
@@ -107,8 +111,8 @@ jobs:
         id: docker-login-gitea
         uses: docker/login-action@v3.4.0
         with:
-          registry: ${{ secrets.LOCAL_URL }}
-          username: ${{ secrets.LOCAL_USERNAME }}
+          registry: ${{ env.REGISTRY_GITEA }}
+          username: ${{ env.USERNAME_GITEA }}
           password: ${{ secrets.LOCAL_TOKEN }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
@@ -119,9 +123,9 @@ jobs:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: ${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:pre-release-dev
-          cache-from: type=registry,ref=${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache,mode=max
+          tags: ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release-dev
+          cache-from: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
       # # Set up Tricy and scan pre-release-dev image from Registry
       # Normal GitHub Action does not work with Gitea Actions, because Trivy wants to login to GitHub
@@ -144,7 +148,7 @@ jobs:
             --ignore-unfixed \
             --pkg-types os,library \
             --severity CRITICAL,HIGH \
-            ${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:pre-release-dev
+            ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release-dev
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Final Dev Image
@@ -156,8 +160,8 @@ jobs:
           push: true
           tags: |
             ${{ steps.metadata.outputs.tags }}
-          cache-from: type=registry,ref=${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
       # https://github.com/regclient/regclient
       - name: Clean Up 'pre-release-dev' Image
@@ -170,7 +174,7 @@ jobs:
 
           # regctl automatically uses the Docker Login credentials from the Docker Login Action
           echo "Deleting pre-release-dev tag from Docker Hub."
-          ./regctl tag rm ${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:pre-release-dev
+          ./regctl tag rm ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release-dev
 
           echo "Cleanup successful."
 
@@ -179,7 +183,7 @@ jobs:
         id: dockerhub-attest-build-provenance
         uses: actions/attest-build-provenance@v2.3.0
         with:
-          subject-name: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          subject-name: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
           push-to-registry: true
           show-summary: true
@@ -189,7 +193,7 @@ jobs:
         id: ghcr-attest-build-provenance
         uses: actions/attest-build-provenance@v2.3.0
         with:
-          subject-name: ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          subject-name: ${{ env.REGISTRY_GHCR }}/${{ env.USERNAME_GHCR }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
           push-to-registry: true
           show-summary: true
@@ -199,7 +203,7 @@ jobs:
         id: gitea-attest-build-provenance
         uses: actions/attest-build-provenance@v2.3.0
         with:
-          subject-name: ${{ secrets.LOCAL_URL }}/${{ secrets.LOCAL_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+          subject-name: ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build-and-push-final-dev.outputs.digest }}
           push-to-registry: true
           show-summary: true
