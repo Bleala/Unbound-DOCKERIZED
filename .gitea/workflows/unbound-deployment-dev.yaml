@@ -8,12 +8,12 @@ on:
     inputs:
       tag:
         description: 'Custom tag (optional, defaults to dev)'
-        required: false
+        required: true
         default: 'dev'
         type: string
       branch:
         description: 'Custom branch (optional, defaults to dev)'
-        required: false
+        required: true
         default: 'dev'
         type: string 
 

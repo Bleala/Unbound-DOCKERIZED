@@ -9,7 +9,7 @@ Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!
 ---
 
 ## About Unbound
-**Disclaimer:** I am just the maintainer of this docker container, I did not write the software. Visit the [Official Unbound Website](https://nlnetlabs.nl/projects/unbound/about/ "Official Unbound Website") of the [Official Unbound Github Repository](https://github.com/NLnetLabs/unbound "Unbound Github Repository") to thank the author(s)! :)
+**Disclaimer:** I am just the maintainer of this docker container, I did not write the software. Visit the [Official Unbound Website](https://nlnetlabs.nl/projects/unbound/about/ "Official Unbound Website") or the [Official Unbound Github Repository](https://github.com/NLnetLabs/unbound "Unbound Github Repository") to thank the author(s)! :)
 
 Unbound is a validating, recursive, and caching DNS resolver. It is designed to be fast and lean and incorporates modern features based on open standards.
 
@@ -29,7 +29,7 @@ Official Github Repository: https://github.com/NLnetLabs/unbound
 
 Docs: https://unbound.docs.nlnetlabs.nl/en/latest/
 
-My Github Repository: https://github.com/YourGithubName/Unbound-DOCKERIZED
+My Github Repository: https://github.com/Bleala/Unbound-DOCKERIZED
 
 ---
 
@@ -101,8 +101,9 @@ services:
       # Optional: set your timezone, for correct container and log time, default to Europe/Vienna
       TZ: Europe/Vienna
       # Optional: set different Unbound configuration file location, default to /etc/unbound/unbound.conf
-      # If you use the "username" config option, set it to "unbound" and make sure the Unbound user (1000:1000) can read this file
       UNBOUND_CONFIG: /etc/unbound/unbound.conf
+      # Optional: set diffenrent Unbound root.key file location, default to /var/unbound/root.key
+      UNBOUND_ROOT_FILE: /var/unbound/root.key
     env_file:
       - path: .env
         required: false
@@ -149,10 +150,40 @@ docker logs -f unbound
 If you do not mount your own `unbound.conf` inside the container, `Unbound` will use the default `unbound.conf` I provided.<br>
 The default config will just act as a DNS forwarder and will send your DNS requests to Cloudflare using DNS over TLS.
 
-In this projects GitHub repository, you will find the `unbound.conf.example` that can serve as a starting point and which is the default `unbound.conf`, if you do not provide your own.
+In this projects GitHub repository, you will find the `unbound.conf` ([Link](https://github.com/Bleala/Unbound-DOCKERIZED/tree/main/docker/files/examples "unbound.conf")) that can serve as a starting point and which is the default `unbound.conf`, if you do not provide your own.
 
 You can also mount a local configuration file named `unbound.conf` into the container (`/etc/unbound/unbound.conf`) to use your own `Unbound` configuration.<br>
 You can find all possible configuration options in the [official Unbound documentation](https://unbound.docs.nlnetlabs.nl/en/latest/manpages/unbound.conf.html).
+
+If you prodive your own `unbound.conf` I suggest that you include the following config:
+
+```
+  # User to drop privileges to after binding ports.
+  # This must match the user created in your Dockerfile.
+  username: "unbound"
+
+  # Unbound's working directory. Used for relative paths if chroot is enabled.
+  # If chroot is disabled, this is where Unbound might look for some files by default.
+  directory: "/var/unbound"
+
+  # Chroot: path to chroot the server to.
+  # Empty string "" means no chroot, which simplifies path management in Docker.
+  chroot: "/var/unbound"
+
+  # PID file location.
+  # Ensure the directory (/var/unbound) is writable by the 'unbound' user
+  # if Unbound manages the pidfile after dropping privileges.
+  # (Typically, root creates it before dropping privileges).
+  pidfile: "unbound.pid"
+
+  # File with the trusted root key for DNSSEC validation.
+  # This file is typically created/updated by the `unbound-anchor` utility.
+  # Your Dockerfile runs unbound-anchor to create this.
+  auto-trust-anchor-file: "root.key"
+```
+
+As `Unbound` is compiled with the corresponding flags ([see Dockerfile](https://github.com/Bleala/Unbound-DOCKERIZED/blob/main/docker/Dockerfile "Dockerfile")) during the build process, you should add this config.<br>
+The default runtime directory for `Unbound` inside the container is `/var/unbound`.
 
 **Attention:** A faulty `unbound.conf` can lead to a complete breakdown of DNS resolution in your network. Test your configuration carefully! 
 
@@ -173,7 +204,7 @@ Once the container is running, you can configure your router or your devices to 
 
 ---
 
-### CacheDB module with Redis backend
+### CacheDB module with Redis/Valkey backend
 
 I built `Unbound` with the CacheDB option, so you can use `Redis/Valkey` as in memory cache for `Unbound`.
 
@@ -230,8 +261,9 @@ services:
       # Optional: set your timezone, for correct container and log time, default to Europe/Vienna
       TZ: Europe/Vienna
       # Optional: set different Unbound configuration file location, default to /etc/unbound/unbound.conf
-      # If you use the "username" config option, set it to "unbound" and make sure the Unbound user (1000:1000) can read this file
       UNBOUND_CONFIG: /etc/unbound/unbound.conf
+      # Optional: set diffenrent Unbound root.key file location, default to /var/unbound/root.key
+      UNBOUND_ROOT_FILE: /var/unbound/root.key
     env_file:
       - path: .env
         required: false
@@ -265,6 +297,7 @@ You can set two different environment variables if you want to:
 |:----:|:----:|:----:|
 |   `TZ`   |   To set the correct container and log time   |   optional, default to `Europe/Vienna`, look [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones") for possible values  |
 |   `UNBOUND_CONFIG`   |   Set a custom path where `unbound` should look for an `unbound.conf`    |   optional, default to `/etc/unbound/unbound.conf` |
+|   `UNBOUND_ROOT_FILE`   |   Set a custom path where `unbound` should look for the `root.key`    |   optional, default to `/var/unbound/root.key` |
 
 ---
 
@@ -277,10 +310,10 @@ cd Unbound-DOCKERIZED/docker
 docker build -t bleala/unbound:dev .
 ```
 
-Or you can use the provided [docker-compose.yml](https://github.com/Bleala/Unbound-DOCKERIZED/blob/master/docker/docker-compose.override.yml "docker-compose.yml") file:
+Or you can use the provided [docker-compose.override.yml](https://github.com/Bleala/Unbound-DOCKERIZED/blob/master/docker/docker-compose.override.yml "docker-compose.override.yml") file:
 
 ```
-docker compose build
+docker compose -f docker-compose.override.yml build
 ```
 
 For more information on using multiple compose files [see here](https://docs.docker.com/compose/production/). You can also find a prebuilt docker image from [Docker Hub](https://hub.docker.com/r/bleala/unbound/ "Docker Hub"), which can be pulled with this command:
@@ -302,7 +335,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 ---
 
 ## Versions
-**1.0.0 - 27.05.2024:**
+**1.23.0 - 28.05.2024:**
 * Initial Release.
 * Unbound Version: 1.23.0
 * Alpine Version: 3.21.3
@@ -310,7 +343,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 <details>
 <summary>Old Version History</summary><br>
 
-**1.0.0 - 27.05.2024:**
+**1.23.0 - 28.05.2024:**
 * Initial Release.
 * Unbound Version: 1.23.0
 * Alpine Version: 3.21.3
