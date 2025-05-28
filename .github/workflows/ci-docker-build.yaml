@@ -51,12 +51,45 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
-      - name: Build Docker Image For Validation
+      - name: Build Docker Image For Validation And Scanning
         uses: docker/build-push-action@v6.17.0
         with:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: false
+          push: true
           tags: ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
           cache-from: type=registry,ref=${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache
           cache-to: type=registry,ref=${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:buildcache,mode=max
+
+      # # https://github.com/marketplace/actions/aqua-security-trivy
+      - name: Scan Image For Vulnerabilities
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # https://github.com/github/codeql-action
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+
+      # https://github.com/regclient/regclient
+      - name: Clean Up 'ci-docker-build' Image
+        if: success()
+        run: |
+          echo "Installing regctl."
+          curl -sL "https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64" -o regctl
+          chmod +x ./regctl
+
+          # regctl automatically uses the Docker Login credentials from the Docker Login Action
+          echo "Deleting ci-docker-build tag from GHCR."
+          ./regctl tag rm ${{ secrets.GHCR_URL }}/${{ secrets.GHCR_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:ci-docker-build
+
+          echo "Cleanup successful."
