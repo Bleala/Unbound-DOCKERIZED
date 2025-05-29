@@ -133,13 +133,16 @@ jobs:
         id: trivy-scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
-          image-ref: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:ci-docker-build
+          image-ref: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release-dev
           format: sarif
           output: trivy-results.sarif
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+        env:
+          TRIVY_USERNAME: ${{ env.USERNAME_GITHUB}}
+          TRIVY_PASSWORD: ${{ secrets.TOKEN_GITHUB }}
 
       # https://github.com/github/codeql-action
       # https://github.com/github/codeql-action/blob/main/upload-sarif/action.yml
@@ -149,9 +152,6 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           token: ${{ secrets.TOKEN_GITHUB }}
-        env:
-          TRIVY_USERNAME: ${{ env.USERNAME_GITHUB}}
-          TRIVY_PASSWORD: ${{ secrets.TOKEN_GITHUB }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Final Dev Image
