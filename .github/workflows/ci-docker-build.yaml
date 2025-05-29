@@ -96,7 +96,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       # https://github.com/github/codeql-action
-      - name: Upload Trivy scan results to GitHub Security tab
+      # https://github.com/github/codeql-action/blob/main/upload-sarif/action.yml
+      - name: Upload Trivy Scan Results To GitHub Security Tab
         id: upload-trivy-results
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -112,4 +113,5 @@ jobs:
           owner: ${{ env.USERNAME_GHCR }}
           packages: ${{ env.IMAGE_NAME }}
           delete-tags: ci-docker-build
-          delete-untagged: true
+          # delete-untagged: true
+          keep-n-untagged: 10
