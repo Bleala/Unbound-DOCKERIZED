@@ -1,4 +1,4 @@
-name: Unbound Deployment
+name: Unbound Deployment Production
 run-name: Unbound Deployment For Production Usage 🚀
 on:
   push:
@@ -19,12 +19,12 @@ on:
 
 env:
   IMAGE_NAME: unbound
-  REGISTRY_DOCKERHUB: docker.io
-  REGISTRY_GHCR: ghcr.io
-  REGISTRY_GITEA: ${{ secrets.LOCAL_URL }}
-  USERNAME_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME }}
-  USERNAME_GHCR: ${{ secrets.GHCR_USERNAME }}
-  USERNAME_GITEA: ${{ secrets.LOCAL_USERNAME }}
+  REGISTRY_DOCKERHUB: ${{ vars.REGISTRY_DOCKERHUB }}
+  REGISTRY_GITHUB: ${{ vars.REGISTRY_GITHUB }}
+  REGISTRY_GITEA: ${{ secrets.REGISTRY_GITEA }}
+  USERNAME_DOCKERHUB: ${{ vars.USERNAME_DOCKERHUB }}
+  USERNAME_GITHUB: ${{ vars.USERNAME_GITHUB }}
+  USERNAME_GITEA: ${{ vars.USERNAME_GITEA }}
 
 jobs:
   Unbound-Deployment-Production:
@@ -59,7 +59,7 @@ jobs:
         uses: peter-evans/dockerhub-description@v4.0.2
         with:
           username: ${{ env.USERNAME_DOCKERHUB }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.TOKEN_DOCKERHUB }}
           repository: ${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
           short-description: "Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!"
 
@@ -71,7 +71,7 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ${{ env.REGISTRY_DOCKERHUB }}/${{ env.USERNAME_DOCKERHUB }}/${{ env.IMAGE_NAME }}
-            ${{ env.REGISTRY_GHCR }}/${{ env.USERNAME_GHCR }}/${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB }}/${{ env.IMAGE_NAME }}
             ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}
           flavor: |
             latest=true
@@ -98,16 +98,16 @@ jobs:
         with:
           registry: ${{ env.REGISTRY_DOCKERHUB }}
           username: ${{ env.USERNAME_DOCKERHUB }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.TOKEN_DOCKERHUB }}
 
       # https://github.com/marketplace/actions/docker-login
       - name: Login To GitHub Container Registry
         id: docker-login-ghcr
         uses: docker/login-action@v3.4.0
         with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ env.USERNAME_GHCR }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          registry: ${{ env.REGISTRY_GITHUB }}
+          username: ${{ env.USERNAME_GITHUB }}
+          password: ${{ secrets.TOKEN_GITHUB }}
 
       # https://github.com/marketplace/actions/docker-login
       - name: Login To Gitea
@@ -116,7 +116,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY_GITEA }}
           username: ${{ env.USERNAME_GITEA }}
-          password: ${{ secrets.LOCAL_TOKEN }}
+          password: ${{ secrets.TOKEN_GITEA }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Pre Release Image For Scanning
@@ -126,13 +126,13 @@ jobs:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release
-          cache-from: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          tags: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release
+          cache-from: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache,mode=max
 
-      # # Set up Tricy and scan pre-release-dev image from Registry
+      # Set up Tricy and scan pre-release-dev image from Registry
       # Normal GitHub Action does not work with Gitea Actions, because Trivy wants to login to GitHub
-      # # https://github.com/marketplace/actions/aqua-security-trivy
+      # https://github.com/marketplace/actions/aqua-security-trivy
       - name: Install Trivy And Scan Image For Vulnerabilities
         id: trivy-scan
         run: |
@@ -151,7 +151,7 @@ jobs:
             --ignore-unfixed \
             --pkg-types os,library \
             --severity CRITICAL,HIGH \
-            ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release
+            ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Final Image
@@ -165,23 +165,21 @@ jobs:
           sbom: false
           tags: |
             ${{ steps.metadata.outputs.tags }}
-          cache-from: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache,mode=max
 
-      # https://github.com/regclient/regclient
-      - name: Clean Up 'pre-release' Image
-        id: clean-up-pre-release
-        if: success()
-        run: |
-          echo "Installing regctl."
-          curl -sL "https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64" -o regctl
-          chmod +x ./regctl
-
-          # regctl automatically uses the Docker Login credentials from the Docker Login Action
-          echo "Deleting pre-release tag from Docker Hub."
-          ./regctl tag rm ${{ env.REGISTRY_GITEA }}/${{ env.USERNAME_GITEA }}/${{ env.IMAGE_NAME }}:pre-release
-
-          echo "Cleanup successful."
+      # https://github.com/marketplace/actions/ghcr-io-cleanup-action
+      - name: GHCR Clean Up 'pre-release' Image Tag
+        id: ghcr-clean-up-pre-release
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: always()
+        with:
+          token: ${{ secrets.TOKEN_GITHUB }}
+          owner: ${{ env.USERNAME_GITHUB }}
+          packages: ${{ env.IMAGE_NAME }}
+          delete-tags: pre-release
+          delete-untagged: true
+          keep-n-untagged: 10
 
       # https://github.com/niniyas/ntfy-action
       - name: Ntfy Notification

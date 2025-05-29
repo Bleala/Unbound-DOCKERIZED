@@ -19,8 +19,8 @@ on:
 
 env:
   IMAGE_NAME: unbound
-  REGISTRY_DOCKERHUB: docker.io
-  REGISTRY_GITHUB: ghcr.io
+  REGISTRY_DOCKERHUB: ${{ vars.REGISTRY_DOCKERHUB }}
+  REGISTRY_GITHUB: ${{ vars.REGISTRY_GITHUB }}
   REGISTRY_GITEA: ${{ secrets.REGISTRY_GITEA }}
   USERNAME_DOCKERHUB: ${{ vars.USERNAME_DOCKERHUB }}
   USERNAME_GITHUB: ${{ vars.USERNAME_GITHUB }}
@@ -123,14 +123,14 @@ jobs:
         with:
           context: ./docker
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: false
+          push: true
           tags: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release-dev
           cache-from: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache,mode=max
 
-      # # Set up Tricy and scan pre-release-dev image from Registry
+      # Set up Tricy and scan pre-release-dev image from Registry
       # Normal GitHub Action does not work with Gitea Actions, because Trivy wants to login to GitHub
-      # # https://github.com/marketplace/actions/aqua-security-trivy
+      # https://github.com/marketplace/actions/aqua-security-trivy
       - name: Install Trivy And Scan Image For Vulnerabilities
         id: trivy-scan
         run: |
@@ -144,22 +144,12 @@ jobs:
           # Schritt 2: Trivy-Scan mit exakt deinen gewünschten Parametern ausführen
           # Der Befehl ist: trivy image [optionen] [image-name]
           trivy image \
-            --format sarif \
-            --output trivy-results.sarif \
+            --format table \
             --exit-code 1 \
             --ignore-unfixed \
             --pkg-types os,library \
             --severity CRITICAL,HIGH \
             ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release-dev
-
-      # https://github.com/github/codeql-action
-      # https://github.com/github/codeql-action/blob/main/upload-sarif/action.yml
-      - name: Upload Trivy Scan Results To GitHub Security Tab
-        id: upload-trivy-results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-results.sarif
-          token: ${{ secrets.TOKEN_GITHUB }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Final Dev Image
