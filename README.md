@@ -335,15 +335,18 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 ---
 
 ## Versions
-**1.23.0 - 28.05.2024:**
+**1.23.0 - 29.05.2025:**
 * Initial Release.
 * Unbound Version: 1.23.0
 * Alpine Version: 3.21.3
 
+**Current Versions:**<br>
+* Unbound 1.23.0, Alpine 3.21.3
+
 <details>
 <summary>Old Version History</summary><br>
 
-**1.23.0 - 28.05.2024:**
+**1.23.0 - 29.05.2025:**
 * Initial Release.
 * Unbound Version: 1.23.0
 * Alpine Version: 3.21.3
