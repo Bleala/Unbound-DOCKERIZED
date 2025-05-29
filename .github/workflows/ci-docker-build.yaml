@@ -113,5 +113,5 @@ jobs:
           owner: ${{ env.USERNAME_GHCR }}
           packages: ${{ env.IMAGE_NAME }}
           delete-tags: ci-docker-build
-          delete-untagged: true
+          # delete-untagged: true
           keep-n-untagged: 10

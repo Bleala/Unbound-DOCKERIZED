@@ -176,7 +176,7 @@ jobs:
           owner: ${{ env.USERNAME_GITHUB }}
           packages: ${{ env.IMAGE_NAME }}
           delete-tags: pre-release-dev
-          delete-untagged: true
+          # delete-untagged: true
           keep-n-untagged: 10
 
       # https://github.com/niniyas/ntfy-action
