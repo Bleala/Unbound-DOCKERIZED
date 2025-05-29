@@ -10,7 +10,7 @@ on:
       - dev
 
 env:
-  IMAGE_NAME: unbound
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
   REGISTRY_GITHUB: ${{ vars.REGISTRY_GITHUB }}
   USERNAME_GITHUB: ${{ vars.USERNAME_GITHUB }}
 
