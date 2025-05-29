@@ -149,6 +149,9 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           token: ${{ secrets.TOKEN_GITHUB }}
+        env:
+          TRIVY_USERNAME: ${{ env.USERNAME_GITHUB}}
+          TRIVY_PASSWORD: ${{ secrets.TOKEN_GITHUB }}
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Build And Push Final Dev Image
