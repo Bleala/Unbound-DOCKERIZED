@@ -114,3 +114,4 @@ jobs:
           packages: ${{ env.IMAGE_NAME }}
           delete-tags: ci-docker-build
           delete-untagged: true
+          keep-n-untagged: 10
