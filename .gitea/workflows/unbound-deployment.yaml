@@ -6,13 +6,13 @@ on:
       - "*.*.*"
   workflow_dispatch:
     inputs:
-      version:
+      tag:
         description: 'Specify the version to build and tag (default: 1.23.0)'
         required: true
         default: '1.23.0'
         type: string
-      branch:
-        description: 'Specify the branch to build from (default: main)'
+      source:
+        description: 'Specify the branch/tag to build from (default: main)'
         required: true
         default: 'main'
         type: string 
@@ -39,6 +39,9 @@ jobs:
       - name: Check Out Repository Code
         id: checkout
         uses: actions/checkout@v4.2.2
+        with:
+          # use custom branch/tag on workflow_dispatch event, otherwise use github.ref
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
 
       # https://github.com/marketplace/actions/hadolint-action
       - name: Lint Dockerfile
@@ -77,10 +80,11 @@ jobs:
           flavor: |
             latest=true
           # generate Docker tags based on the following events/attributes
+          # use custom tag on workflow_dispatch event or use pushed tag
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=semver,pattern={{version}},value=${{ github.event.inputs.tag || '' }} 
+            type=semver,pattern={{major}}.{{minor}},value=${{ github.event.inputs.tag || '' }}
+            type=semver,pattern={{major}},value=${{ github.event.inputs.tag || '' }}
 
       # https://github.com/marketplace/actions/docker-setup-qemu
       - name: Set Up QEMU
