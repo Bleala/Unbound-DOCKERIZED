@@ -80,7 +80,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:ci-docker-build
-          cache-from: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:buildcache
+          cache-from: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.BUILDCACHE_NAME}}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.BUILDCACHE_NAME}}:buildcache,mode=max
 
       # # https://github.com/marketplace/actions/aqua-security-trivy
@@ -125,4 +125,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ env.USERNAME_GITHUB }}
           packages: ${{ env.BUILDCACHE_NAME }}
+          exclude-tags: buildcache
           keep-n-untagged: 20
