@@ -97,7 +97,7 @@ jobs:
         uses: docker/setup-buildx-action@v3.10.0
 
       # https://github.com/marketplace/actions/cosign-installer
-      - name: Install Cosign
+      - name: Set Up Cosign
         id: setup-cosign
         uses: sigstore/cosign-installer@v3.8.2
 
@@ -181,13 +181,13 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.BUILDCACHE_NAME}}:buildcache,mode=max
 
       # https://github.com/marketplace/actions/cosign-installer
-      - name: Sign The Final Docker Dev Image (Static Key)
+      - name: Sign The Final Docker Prod Image (Static Key)
         id: sign-with-cosign
         env:
           TAGS: ${{ steps.metadata.outputs.tags }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-          DIGEST: ${{ steps.build-and-push-final-dev.outputs.digest }}
+          DIGEST: ${{ steps.build-and-push-final.outputs.digest }}
         run: |
           images=""
           for tag in ${TAGS}; do
