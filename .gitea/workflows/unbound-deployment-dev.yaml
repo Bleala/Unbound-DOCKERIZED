@@ -7,12 +7,12 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Custom tag (optional, defaults to dev)'
+        description: 'Specify the version to build and tag (default: dev)'
         required: true
         default: 'dev'
         type: string
-      branch:
-        description: 'Custom branch (optional, defaults to dev)'
+      source:
+        description: 'Specify the branch/tag to build from (default: dev)'
         required: true
         default: 'dev'
         type: string 
@@ -39,6 +39,9 @@ jobs:
       - name: Check Out Repository Code
         id: checkout
         uses: actions/checkout@v4.2.2
+        with:
+          # use custom branch/tag on workflow_dispatch event, otherwise use github.ref
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
 
       # https://github.com/marketplace/actions/hadolint-action
       - name: Lint Dockerfile
@@ -77,8 +80,9 @@ jobs:
           flavor: |
             latest=false
           # generate Docker tags based on the following events/attributes
+          # use custom tag on workflow_dispatch event or default to 'dev'
           tags: |
-            type=raw,value=dev
+            type=raw,value=${{ github.event.inputs.tag || 'dev' }}
 
       # https://github.com/marketplace/actions/docker-setup-qemu
       - name: Set Up QEMU
