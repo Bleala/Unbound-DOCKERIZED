@@ -181,7 +181,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.BUILDCACHE_NAME}}:buildcache,mode=max
 
       # https://github.com/marketplace/actions/cosign-installer
-      - name: Sign The Final Docker Dev Image (Static Key)
+      - name: Sign The Final Docker Prod Image (Static Key)
         id: sign-with-cosign
         env:
           TAGS: ${{ steps.metadata.outputs.tags }}
