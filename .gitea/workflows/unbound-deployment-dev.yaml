@@ -95,7 +95,7 @@ jobs:
         uses: docker/setup-buildx-action@v3.10.0
 
       # https://github.com/marketplace/actions/cosign-installer
-      - name: Install Cosign
+      - name: Set Up Cosign
         id: setup-cosign
         uses: sigstore/cosign-installer@v3.8.2
 
