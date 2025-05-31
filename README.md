@@ -1,5 +1,5 @@
 # [Unbound](https://unbound.docs.nlnetlabs.nl/en/latest/ "Official Documentation")-DOCKERIZED
-[![Docker Image Version](https://img.shields.io/docker/v/bleala/unbound/latest?style=flat&label=Version)](https://hub.docker.com/r/bleala/unbound)
+[![Image Version](https://img.shields.io/github/v/release/Bleala/Unbound-DOCKERIZED?sort=semver&display_name=tag&style=flat&label=Version&link=https%3A%2F%2Fgithub.com%2FBleala%2FUnbound-DOCKERIZED%2Freleases)](https://github.com/Bleala/Unbound-DOCKERIZED/releases)
 [![Docker Stars](https://img.shields.io/docker/stars/bleala/unbound?style=flat&label=Docker%20Stars)](https://hub.docker.com/r/bleala/unbound)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bleala/unbound?style=flat&label=Docker%20Pulls)](https://hub.docker.com/r/bleala/unbound)
 [![CI - Docker Build Check](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/ci-docker-build.yaml/badge.svg?branch=main)](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/ci-docker-build.yaml)
