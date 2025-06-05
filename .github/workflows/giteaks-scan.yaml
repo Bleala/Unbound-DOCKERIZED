@@ -1,4 +1,4 @@
-name: Gitleaks Scan
+name: Gitleaks Scan 🔍
 run-name: Gitleaks Scan 🔍
 on:
   push:
