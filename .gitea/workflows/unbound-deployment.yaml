@@ -29,7 +29,7 @@ env:
 
 jobs:
   Unbound-Deployment-Production:
-    name: Unbound Deployment Production
+    name: Unbound Deployment Production 🚀
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -163,6 +163,7 @@ jobs:
             --ignore-unfixed \
             --pkg-types os,library \
             --severity CRITICAL,HIGH \
+            --scanners vuln,secret \
             ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release
 
       # https://github.com/marketplace/actions/build-and-push-docker-images

@@ -1,5 +1,5 @@
 name: Unbound Deployment Development
-run-name: Unbound Deployment For Development Usage 🚀
+run-name: Unbound Deployment For Development Usage ⚙️
 on:
   push:
     branches:
@@ -29,7 +29,7 @@ env:
 
 jobs:
   Unbound-Deployment-Development:
-    name: Unbound Deployment Development
+    name: Unbound Deployment Development ⚙️
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -161,6 +161,7 @@ jobs:
             --ignore-unfixed \
             --pkg-types os,library \
             --severity CRITICAL,HIGH \
+            --scanners vuln,secret \
             ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:pre-release-dev
 
       # https://github.com/marketplace/actions/build-and-push-docker-images
