@@ -1,5 +1,5 @@
-name: Gitleaks Scan
-run-name: Gitleaks Scan 🔍
+name: Gitleaks Scan 🔑🔍
+run-name: Gitleaks Scan 🔑🔍
 on:
   push:
     branches:
@@ -21,7 +21,7 @@ on:
 
 jobs:
   Gitleaks-Scan:
-    name: Gitleaks Scan 🔍
+    name: Gitleaks Scan 🔑🔍
     runs-on: ubuntu-latest
     defaults:
       run:
