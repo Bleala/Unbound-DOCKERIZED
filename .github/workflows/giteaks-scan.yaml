@@ -19,6 +19,10 @@ on:
         default: 'main'
         type: string 
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Gitleaks-Scan:
     name: Gitleaks Scan 🔑🔍
