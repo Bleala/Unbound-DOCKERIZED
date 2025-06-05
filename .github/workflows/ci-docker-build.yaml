@@ -16,6 +16,10 @@ on:
         default: 'main'
         type: string 
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   BUILDCACHE_NAME: ${{ vars.BUILDCACHE_NAME }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
