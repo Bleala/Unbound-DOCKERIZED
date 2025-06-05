@@ -38,6 +38,8 @@ jobs:
         with:
           # use custom branch/tag on workflow_dispatch event, otherwise use github.ref
           ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+          # fetch all history
+          fetch-depth: 0
 
       # https://github.com/marketplace/actions/gitleaks
       - name: Scan Git Repository For Secrets
