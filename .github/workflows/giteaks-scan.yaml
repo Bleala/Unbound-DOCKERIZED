@@ -1,5 +1,5 @@
-name: Gitleaks Scan 🔍
-run-name: Gitleaks Scan 🔍
+name: Gitleaks Scan 🔑🔍
+run-name: Gitleaks Scan 🔑🔍
 on:
   push:
     branches:
@@ -19,9 +19,13 @@ on:
         default: 'main'
         type: string 
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Gitleaks-Scan:
-    name: Gitleaks Scan 🔍
+    name: Gitleaks Scan 🔑🔍
     runs-on: ubuntu-latest
     defaults:
       run:

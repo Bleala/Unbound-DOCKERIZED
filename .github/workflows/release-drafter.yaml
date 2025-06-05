@@ -1,4 +1,5 @@
 name: Draft Release Notes 📝🎉
+run-name: Draft Release Notes 📝🎉
 on:
   push:
     # branches to consider in the event; optional, defaults to all
@@ -12,6 +13,10 @@ on:
       - synchronize
     branches:
       - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   Draft-Release-Notes:
