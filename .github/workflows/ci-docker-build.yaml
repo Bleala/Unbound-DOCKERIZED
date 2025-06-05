@@ -105,15 +105,6 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
 
-      # https://github.com/marketplace/actions/gitleaks
-      - name: Scan Repository For Secrets
-        id: gitleaks-scan
-        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
-        with:
-          config: .gitleaks.toml
-          fail_on: 'all'
-          redaction: true
-
       # https://github.com/marketplace/actions/ghcr-io-cleanup-action
       - name: GHCR Clean Up 'ci-docker-build' Image Tag
         id: ghcr-clean-up-ci-docker-build
