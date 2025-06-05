@@ -1,4 +1,4 @@
-name: Draft Release Notes
+name: Draft Release Notes 📝🎉
 on:
   push:
     # branches to consider in the event; optional, defaults to all
@@ -15,7 +15,7 @@ on:
 
 jobs:
   Draft-Release-Notes:
-    name: Draft Release Notes
+    name: Draft Release Notes 📝🎉
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,7 +29,8 @@ jobs:
     steps:
       # Drafts your next Release notes as Pull Requests are merged into "master"
       # https://github.com/marketplace/actions/release-drafter
-      - uses: release-drafter/release-drafter@v6.1.0
+      - name: Draft Release Notes 📝🎉
         id: release-drafter
+        uses: release-drafter/release-drafter@v6.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
