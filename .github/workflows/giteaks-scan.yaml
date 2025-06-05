@@ -3,12 +3,12 @@ run-name: Gitleaks Scan 🔍
 on:
   push:
     branches:
-      - main
-      - dev
-  pull_request_target:
-    branches: 
-      - main
-      - dev
+      - '**' # all branches
+  # Not Supported
+  # pull_request_target:
+  #   branches: 
+  #     - main
+  #     - dev
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
