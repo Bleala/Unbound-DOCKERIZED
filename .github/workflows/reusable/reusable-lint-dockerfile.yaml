@@ -1,0 +1,42 @@
+# .github/workflows/reusable-docker-lint.yml
+name: Reusable - Lint Dockerfile 🐳📄🔍
+run-name: Lint Dockerfile 🐳📄🔍
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Path to the Dockerfile to lint'
+        required: false
+        default: './docker/Dockerfile'
+        type: string
+      ref:
+        description: 'Ref to checkout'
+        required: true
+        default: ''
+        type: string
+
+jobs:
+  lint-dockerfile:
+    name: Lint Dockerfile 🐳📄🔍
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - name: Check Out Repository Code 🛒
+        id: checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.ref }}
+
+      # https://github.com/marketplace/actions/hadolint-action
+      - name: Lint Dockerfile 🐳📄🔍
+        id: dockerfile-linter
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: ${{ inputs.dockerfile }}
