@@ -1,5 +1,5 @@
-name: CI - Docker Build Check ✅
-run-name: Unbound Container Docker Build Check ✅
+name: Docker Build Check 🐳✅
+run-name: Unbound Container Docker Build Check 🐳✅
 on:
   push:
     branches:
@@ -27,8 +27,15 @@ env:
   USERNAME_GITHUB: ${{ vars.USERNAME_GITHUB }}
 
 jobs:
-  CI-Docker-Build-Check:
-    name: CI - Docker Build Check ✅
+  lint-dockerfile:
+    name: Lint Dockerfile 🐳📄🔍
+    uses: ./.github/workflows/reusable-lint-dockerfile.yaml
+    with:
+      # HIER werden die Werte für die Inputs übergeben
+      dockerfile: ./docker/Dockerfile
+      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+  Docker-Build-Check:
+    name: Docker Build Check 🐳✅
     runs-on: ubuntu-latest
     defaults:
       run:
