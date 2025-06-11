@@ -32,7 +32,7 @@ jobs:
     uses: ./.github/workflows/reusable/reusable-lint-dockerfile.yaml
     with:
       # HIER werden die Werte für die Inputs übergeben
-      dockerfile: './docker/Dockerfile'
+      dockerfile: ./docker/Dockerfile
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
   Docker-Build-Check:
     name: Docker Build Check 🐳✅
