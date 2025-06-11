@@ -35,8 +35,19 @@ jobs:
       dockerfile: ./docker/Dockerfile
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
 
+  lint-shell-scripts:
+    name: Lint Shell Scripts 📜🔍
+    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-shell-scripts-linter.yaml@main
+    with:
+      # HIER werden die Werte für die Inputs übergeben
+      exclude-paths: "LICENSE,docker/Dockerfile"
+      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+
   Docker-Build-Check:
     name: Docker Build Check 🐳✅
+    needs:
+      - lint-dockerfile
+      - lint-shell-scripts
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -59,20 +70,6 @@ jobs:
         with:
           # use custom branch/tag on workflow_dispatch event, otherwise use github.ref
           ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
-
-      # https://github.com/marketplace/actions/hadolint-action
-      - name: Lint Dockerfile 🐳📄🔍
-        id: dockerfile-linter
-        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
-        with:
-          dockerfile: ./docker/Dockerfile
-      
-      # https://github.com/marketplace/actions/shell-linter
-      - name: Lint Shell Scripts 📜🔍
-        id: shell-linter
-        uses: Azbagheri/shell-linter@30a9cf3f6cf25c08fc98f10d7dc4167f7b5c0c00 # v0.8.0
-        with:
-          exclude-paths: "LICENSE,docker/Dockerfile"
 
       # https://github.com/marketplace/actions/docker-setup-qemu
       - name: Set Up QEMU 🛠️
