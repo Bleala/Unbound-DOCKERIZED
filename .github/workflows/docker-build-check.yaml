@@ -1,5 +1,6 @@
-name: Docker Build Check 🐳✅
-run-name: Unbound Container Docker Build Check 🐳✅
+name: Container Build Check 🐳✅
+run-name: Container Build Check 🐳✅
+
 on:
   push:
     branches:
@@ -47,8 +48,8 @@ jobs:
       # for actions/checkout to fetch code
       contents: read
 
-  Docker-Build-Check:
-    name: Docker Build Check 🐳✅
+  Container-Build-Check:
+    name: Container Build Check 🐳✅
     needs:
       - lint-dockerfile
       - lint-shell-scripts
