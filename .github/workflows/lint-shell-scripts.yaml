@@ -1,12 +1,12 @@
-name: Lint Dockerfile 🐳📄🔍
-run-name: Lint Dockerfile 🐳📄🔍
+name: Lint Shell Scripts 📜🔍
+run-name: Lint Shell Scripts 📜🔍
 
 on:
   push:
     branches:
       - '**'
     paths:
-      - 'docker/Dockerfile'
+      - '**/*.sh'
   workflow_dispatch:
     inputs:
       source:
@@ -20,10 +20,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-dockerfile:
-    name: Lint Dockerfile 🐳📄🔍
-    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-dockerfile-linter.yaml@main
+  lint-shell-scripts:
+    name: Lint Shell Scripts 📜🔍
+    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-shell-scripts-linter.yaml@main
     with:
+      exclude-paths: "LICENSE,docker/Dockerfile"
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
     permissions:
       # for actions/checkout to fetch code
