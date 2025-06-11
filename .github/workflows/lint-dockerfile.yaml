@@ -7,6 +7,13 @@ on:
       - '**'
     paths:
       - 'docker/Dockerfile'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Specify the branch/tag to checkout (default: main)'
+        required: true
+        default: 'main'
+        type: string 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -17,7 +24,7 @@ jobs:
     name: Lint Dockerfile 🐳📄🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-dockerfile-linter.yaml@main
     with:
-      ref: ${{ github.ref }}
+      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
     permissions:
       # for actions/checkout to fetch code
       contents: read
