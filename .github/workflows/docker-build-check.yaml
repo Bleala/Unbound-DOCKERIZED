@@ -31,17 +31,21 @@ jobs:
     name: Lint Dockerfile 🐳📄🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-dockerfile-linter.yaml@main
     with:
-      # HIER werden die Werte für die Inputs übergeben
       dockerfile: ./docker/Dockerfile
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
 
   lint-shell-scripts:
     name: Lint Shell Scripts 📜🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-shell-scripts-linter.yaml@main
     with:
-      # HIER werden die Werte für die Inputs übergeben
       exclude-paths: "LICENSE,docker/Dockerfile"
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
 
   Docker-Build-Check:
     name: Docker Build Check 🐳✅
