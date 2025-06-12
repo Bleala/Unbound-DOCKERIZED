@@ -55,14 +55,14 @@ jobs:
       - lint-shell-scripts
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-build-test-container.yaml@main
     with:
-      buildcache_name: ${{ env.BUILDCACHE_NAME }}
-      image_name: ${{ env.IMAGE_NAME }}
+      buildcache_name: ${{ vars.BUILDCACHE_NAME }}
+      image_name: ${{ vars.IMAGE_NAME }}
       image_tag: ci-container-build
       platforms: linux/amd64,linux/arm64,linux/arm/v7
       push: true
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
-      registry: ${{ env.REGISTRY_GITHUB }}
-      username: ${{ env.USERNAME_GITHUB }}
+      registry: ${{ vars.REGISTRY_GITHUB }}
+      username: ${{ vars.USERNAME_GITHUB }}
     permissions:
       # for actions/checkout to fetch code
       contents: read
