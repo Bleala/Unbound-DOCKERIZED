@@ -48,11 +48,31 @@ jobs:
       # for actions/checkout to fetch code
       contents: read
 
-  Container-Build-Check:
-    name: Container Build Check 🐳✅
+  build-test-container:
+    name: Build Test Container 🛠️ ✅ 🐳
     needs:
       - lint-dockerfile
       - lint-shell-scripts
+    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-build-test-container.yaml@main
+    with:
+      buildcache_name: ${{ env.BUILDCACHE_NAME }}
+      image_name: ${{ env.IMAGE_NAME }}
+      image_tag: ci-container-build
+      platforms: linux/amd64,linux/arm64,linux/arm/v7
+      push: true
+      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+      registry: ${{ env.REGISTRY_GITHUB }}
+      username: ${{ env.USERNAME_GITHUB }}
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
+      # for docker/build-push-action to push the Docker image to GitHub Container Registry
+      packages: write
+
+  Container-Build-Check:
+    name: Container Build Check 🐳✅
+    needs:
+      - build-test-container
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -68,46 +88,7 @@ jobs:
       # for docker/build-push-action to push the Docker image to GitHub Container Registry
       packages: write
     steps:
-      # https://github.com/marketplace/actions/checkout
-      - name: Check Out Repository Code 🛒
-        id: checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          # use custom branch/tag on workflow_dispatch event, otherwise use github.ref
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
-
-      # https://github.com/marketplace/actions/docker-setup-qemu
-      - name: Set Up QEMU 🛠️
-        id: setup-qemu
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
-
-      # https://github.com/marketplace/actions/docker-setup-buildx
-      - name: Set Up Docker Buildx 🐳🧱
-        id: setup-buildx
-        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
-
-      # https://github.com/marketplace/actions/docker-login
-      - name: Login To GitHub Container Registry 🔑📦
-        id: docker-login-ghcr
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
-        with:
-          registry: ${{ env.REGISTRY_GITHUB }}
-          username: ${{ env.USERNAME_GITHUB}}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # https://github.com/marketplace/actions/build-and-push-docker-images
-      - name: Build Docker Image For Validation And Scanning 🏗️🔬
-        id: build-and-push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
-        with:
-          context: ./docker
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: true
-          tags: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:ci-docker-build
-          cache-from: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.BUILDCACHE_NAME}}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.BUILDCACHE_NAME}}:buildcache,mode=max
-
-      # # https://github.com/marketplace/actions/aqua-security-trivy
+      # https://github.com/marketplace/actions/aqua-security-trivy
       - name: Scan Image For Vulnerabilities 🛡️🔍
         id: trivy-scan
         uses: aquasecurity/trivy-action@76071ef0d7ec797419534a183b498b4d6366cf37 # 0.31.0
