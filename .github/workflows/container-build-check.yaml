@@ -87,45 +87,32 @@ jobs:
       # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
       actions: read
 
-  Container-Build-Check:
-    name: Container Build Check 🐳✅
+  cleanup-ci-container-build-tag:
+    name: GHCR Clean Up 'ci-container-build' Image Tag 🧹🏷️
     needs:
       - trivy-scan-and-upload
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-cleanup-ci-container-build-tag.yaml@main
+    with:
+      image_name: ${{ vars.IMAGE_NAME }}
+      image_tag: ci-container-build
+      username: ${{ vars.USERNAME_GITHUB }}
     permissions:
       # for actions/checkout to fetch code
       contents: read
-      # for github/codeql-action/upload-sarif to upload SARIF results
-      security-events: write
-      # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-      actions: read
-      # for docker/build-push-action to push the Docker image to GitHub Container Registry
+      # for ghcr-io-cleanup-action to clean up the image tag
       packages: write
-    steps:
-      # https://github.com/marketplace/actions/ghcr-io-cleanup-action
-      - name: GHCR Clean Up 'ci-container-build' Image Tag 🧹🏷️
-        id: ghcr-clean-up-ci-container-build
-        uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
-        if: always()
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ env.USERNAME_GITHUB }}
-          packages: ${{ env.IMAGE_NAME }}
-          delete-tags: ci-container-build
-          delete-untagged: true
 
-      # https://github.com/marketplace/actions/ghcr-io-cleanup-action
-      - name: GHCR Clean Up 'buildcache' Image Tag 🧹🏷️
-        id: ghcr-clean-up-buildcache
-        uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
-        if: always()
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ env.USERNAME_GITHUB }}
-          packages: ${{ env.BUILDCACHE_NAME }}
-          exclude-tags: buildcache
-          keep-n-untagged: 20
+  cleanup-buildcache-image-tag:
+    name: GHCR Clean Up 'buildcache' Image Tag 🧹🏷️
+    needs:
+      - trivy-scan-and-upload
+    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-cleanup-buildcache-image-tag.yaml@main
+    with:
+      image_name: ${{ vars.BUILDCACHE_NAME }}
+      image_tag_to_exclude: buildcache
+      username: ${{ vars.USERNAME_GITHUB }}
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
+      # for ghcr-io-cleanup-action to clean up the image tag
+      packages: write
