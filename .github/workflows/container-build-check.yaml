@@ -69,10 +69,28 @@ jobs:
       # for docker/build-push-action to push the Docker image to GitHub Container Registry
       packages: write
 
+  trivy-scan-and-upload:
+    name: Scan Image For Vulnerabilities 🛡️🔍
+    needs:
+      - build-test-container
+    uses: Bleala/Reusable-Workflows/.github/workflows/reusable-trivy-scan-and-upload.yaml@main
+    with:
+      image_name: ${{ vars.IMAGE_NAME }}
+      image_tag: ci-container-build
+      registry: ${{ vars.REGISTRY_GITHUB }}
+      username: ${{ vars.USERNAME_GITHUB }}
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
+      # for github/codeql-action/upload-sarif to upload SARIF results
+      security-events: write
+      # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      actions: read
+
   Container-Build-Check:
     name: Container Build Check 🐳✅
     needs:
-      - build-test-container
+      - trivy-scan-and-upload
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -88,39 +106,16 @@ jobs:
       # for docker/build-push-action to push the Docker image to GitHub Container Registry
       packages: write
     steps:
-      # https://github.com/marketplace/actions/aqua-security-trivy
-      - name: Scan Image For Vulnerabilities 🛡️🔍
-        id: trivy-scan
-        uses: aquasecurity/trivy-action@76071ef0d7ec797419534a183b498b4d6366cf37 # 0.31.0
-        with:
-          image-ref: ${{ env.REGISTRY_GITHUB }}/${{ env.USERNAME_GITHUB}}/${{ env.IMAGE_NAME}}:ci-docker-build
-          format: sarif
-          output: trivy-results.sarif
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          scanners: 'vuln,secret'
-
-      # https://github.com/github/codeql-action
-      # https://github.com/github/codeql-action/blob/main/upload-sarif/action.yml
-      - name: Upload Trivy Scan Results To GitHub Security Tab 🛡️⬆️
-        id: upload-trivy-results
-        uses: github/codeql-action/upload-sarif@fca7ace96b7d713c7035871441bd52efbe39e27e # v3.28.19
-        if: always()
-        with:
-          sarif_file: trivy-results.sarif
-
       # https://github.com/marketplace/actions/ghcr-io-cleanup-action
-      - name: GHCR Clean Up 'ci-docker-build' Image Tag 🧹🏷️
-        id: ghcr-clean-up-ci-docker-build
+      - name: GHCR Clean Up 'ci-container-build' Image Tag 🧹🏷️
+        id: ghcr-clean-up-ci-container-build
         uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ env.USERNAME_GITHUB }}
           packages: ${{ env.IMAGE_NAME }}
-          delete-tags: ci-docker-build
+          delete-tags: ci-container-build
           delete-untagged: true
 
       # https://github.com/marketplace/actions/ghcr-io-cleanup-action
