@@ -1,6 +1,6 @@
 # Global variables
 ARG ALPINE_VERSION="3.22.1" \
-    BUILD_DATE="2025-08-27T14:00:00Z" \
+    BUILD_DATE="2025-08-27T20:00:00Z" \
     UNBOUND_USER="unbound" \
     UNBOUND_VERSION="1.23.1"
 
