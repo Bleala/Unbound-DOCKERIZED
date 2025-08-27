@@ -5,7 +5,8 @@ on:
   push:
     branches:
       - main
-  pull_request_target:
+#  pull_request_target:
+  pull_request:
     branches: 
       - main
       - dev
@@ -23,7 +24,10 @@ concurrency:
 
 env:
   BUILDCACHE_NAME: ${{ vars.BUILDCACHE_NAME }}
+  BUILDCACHE_TAG: ${{ vars.BUILDCACHE_TAG }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+  IMAGE_TAG_CI_DOCKER_BUILD: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
+  PLATFORMS_TO_BUILD: ${{ vars.PLATFORMS_TO_BUILD }}
   REGISTRY_GITHUB: ${{ vars.REGISTRY_GITHUB }}
   USERNAME_GITHUB: ${{ vars.USERNAME_GITHUB }}
 
@@ -56,9 +60,10 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-build-test-container.yaml@main
     with:
       buildcache_name: ${{ vars.BUILDCACHE_NAME }}
+      buildcache_tag: ${{ vars.BUILDCACHE_TAG }}
       image_name: ${{ vars.IMAGE_NAME }}
-      image_tag: ci-container-build
-      platforms: linux/amd64,linux/arm64,linux/arm/v7
+      image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
+      platforms: ${{ vars.PLATFORMS_TO_BUILD }}
       push: true
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
       registry: ${{ vars.REGISTRY_GITHUB }}
@@ -76,7 +81,7 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-trivy-scan-and-upload.yaml@main
     with:
       image_name: ${{ vars.IMAGE_NAME }}
-      image_tag: ci-container-build
+      image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
     permissions:
@@ -94,7 +99,7 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-cleanup-ci-container-build-tag.yaml@main
     with:
       image_name: ${{ vars.IMAGE_NAME }}
-      image_tag: ci-container-build
+      image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       username: ${{ vars.USERNAME_GITHUB }}
     permissions:
       # for actions/checkout to fetch code
@@ -109,7 +114,7 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-cleanup-buildcache-image-tag.yaml@main
     with:
       image_name: ${{ vars.BUILDCACHE_NAME }}
-      image_tag_to_exclude: buildcache
+      image_tag_to_exclude: ${{ vars.BUILDCACHE_TAG }}
       username: ${{ vars.USERNAME_GITHUB }}
     permissions:
       # for actions/checkout to fetch code
