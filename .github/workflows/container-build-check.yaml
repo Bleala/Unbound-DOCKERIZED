@@ -72,6 +72,7 @@ jobs:
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
+    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
@@ -88,6 +89,7 @@ jobs:
       image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
+    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
@@ -106,6 +108,7 @@ jobs:
       image_name: ${{ vars.IMAGE_NAME }}
       image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       username: ${{ vars.USERNAME_GITHUB }}
+    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
@@ -122,6 +125,7 @@ jobs:
       image_name: ${{ vars.BUILDCACHE_NAME }}
       image_tag_to_exclude: ${{ vars.BUILDCACHE_TAG }}
       username: ${{ vars.USERNAME_GITHUB }}
+    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
