@@ -1,8 +1,8 @@
 # Global variables
-ARG ALPINE_VERSION="3.21.3" \
-    BUILD_DATE="2025-05-30T19:00:00Z" \
+ARG ALPINE_VERSION="3.22.1" \
+    BUILD_DATE="2025-08-27T14:00:00Z" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.23.0"
+    UNBOUND_VERSION="1.23.1"
 
 # -----------------------------------------------------------------------------------------------
 
@@ -38,14 +38,14 @@ RUN set -x && \
     apk update && \
     apk add --no-cache --virtual .build-deps \
       build-base=~0.5 \
-      pkgconf=~2.3.0 \
-      curl=~8.12.1 \
-      openssl-dev=~3.3.3 \
-      expat-dev=~2.7.0 \
+      pkgconf=~2.4.3 \
+      curl=~8.14.1 \
+      openssl-dev=~3.5.2 \
+      expat-dev=~2.7.1 \
       libevent-dev=~2.1.12 \
-      protobuf-c-dev=~1.5.0 \
-      nghttp2-dev=~1.64.0 \
-      hiredis-dev=~1.2.0 \
+      protobuf-c-dev=~1.5.2 \
+      nghttp2-dev=~1.65.0 \
+      hiredis-dev=~1.3.0 \
       libsodium-dev=~1.0.20 && \
     # Download Unbound
     curl -sSLO "${UNBOUND_DOWNLOAD}" && \
@@ -155,13 +155,13 @@ WORKDIR /var/unbound
 # Install runtime dependencies
 RUN apk update && \
     apk add --no-cache \
-      openssl=~3.3.3 \
+      openssl=~3.5.2 \
       libevent=~2.1.12 \
-      hiredis=~1.2.0 \
-      nghttp2-libs=~1.64.0 \
+      hiredis=~1.3.0 \
+      nghttp2-libs=~1.65.0 \
       libsodium=~1.0.20 \
-      expat=~2.7.0 \
-      protobuf-c=~1.5.0 \
+      expat=~2.7.1 \
+      protobuf-c=~1.5.2 \
       tzdata=~2025b
 
 # Add Unbound user and group
