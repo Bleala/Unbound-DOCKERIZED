@@ -41,7 +41,7 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-dockerfile-linter.yaml@main
     with:
       dockerfile: ./docker/Dockerfile
-      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+      ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
     permissions:
       # for actions/checkout to fetch code
       contents: read
@@ -51,7 +51,7 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-shell-scripts-linter.yaml@main
     with:
       exclude_paths: "LICENSE,docker/Dockerfile"
-      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+      ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
     permissions:
       # for actions/checkout to fetch code
       contents: read
@@ -69,7 +69,7 @@ jobs:
       image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       platforms: ${{ vars.PLATFORMS_TO_BUILD }}
       push: true
-      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+      ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
     secrets: inherit
