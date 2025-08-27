@@ -24,7 +24,7 @@ jobs:
     name: Lint Shell Scripts 📜🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-shell-scripts-linter.yaml@main
     with:
-      exclude-paths: "LICENSE,docker/Dockerfile"
+      exclude_paths: "LICENSE,docker/Dockerfile"
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
     permissions:
       # for actions/checkout to fetch code
