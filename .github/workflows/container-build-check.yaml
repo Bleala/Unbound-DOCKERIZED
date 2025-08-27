@@ -101,6 +101,7 @@ jobs:
     needs:
       - trivy-scan-and-upload
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-cleanup-ci-container-build-tag.yaml@main
+    if: always()
     with:
       image_name: ${{ vars.IMAGE_NAME }}
       image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
@@ -116,6 +117,7 @@ jobs:
     needs:
       - trivy-scan-and-upload
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-cleanup-buildcache-image-tag.yaml@main
+    if: always()
     with:
       image_name: ${{ vars.BUILDCACHE_NAME }}
       image_tag_to_exclude: ${{ vars.BUILDCACHE_TAG }}
