@@ -2,13 +2,13 @@ name: Gitleaks Scan 🔑🔍
 run-name: Gitleaks Scan 🔑🔍
 
 on:
-  push:
-    branches:
-      - '**' # all branches
-  # pull_request:
-  #   branches: 
-  #     - main
-  #     - dev
+  # push:
+  #   branches:
+  #     - '**' # all branches
+  pull_request:
+    branches: 
+      - main
+      - dev
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
