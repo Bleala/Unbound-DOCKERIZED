@@ -29,6 +29,11 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-gitleaks-scan.yaml@main
     with:
       ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
+    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
+      # for PR comments
+      pull-requests: write
+      # for artifacts upload
+      security-events: write
