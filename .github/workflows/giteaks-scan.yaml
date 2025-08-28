@@ -5,10 +5,10 @@ on:
   push:
     branches:
       - '**' # all branches
-  pull_request:
-    branches: 
-      - main
-      - dev
+  # pull_request:
+  #   branches: 
+  #     - main
+  #     - dev
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
