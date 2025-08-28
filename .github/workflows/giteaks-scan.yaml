@@ -5,11 +5,10 @@ on:
   push:
     branches:
       - '**' # all branches
-  # Not Supported
-  # pull_request_target:
-  #   branches: 
-  #     - main
-  #     - dev
+  pull_request:
+    branches: 
+      - main
+      - dev
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
@@ -29,7 +28,7 @@ jobs:
     name: Gitleaks Scan 🔑🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-gitleaks-scan.yaml@main
     with:
-      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source || github.ref }}
+      ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
     permissions:
       # for actions/checkout to fetch code
       contents: read

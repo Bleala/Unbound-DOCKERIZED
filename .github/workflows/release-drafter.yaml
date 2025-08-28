@@ -22,6 +22,7 @@ jobs:
   draft-release-notes:
     name: Draft Release Notes 📝🎉
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-release-drafter.yaml@main
+    secrets: inherit
     permissions:
       # write permission is required to create a github release
       contents: write
