@@ -12,7 +12,6 @@ on:
       source:
         description: 'Specify the branch/tag to checkout (default: main)'
         required: true
-        default: 'main'
         type: string 
 
 concurrency:
@@ -28,3 +27,5 @@ jobs:
     permissions:
       # for actions/checkout to fetch code
       contents: read
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}

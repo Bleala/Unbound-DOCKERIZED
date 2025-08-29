@@ -13,7 +13,6 @@ on:
       source:
         description: 'Specify the branch/tag to checkout (default: main)'
         required: true
-        default: 'main'
         type: string 
 
 concurrency:

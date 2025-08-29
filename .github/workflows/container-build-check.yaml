@@ -19,7 +19,6 @@ on:
       source:
         description: 'Specify the branch/tag to build (default: main)'
         required: true
-        default: 'main'
         type: string 
 
 concurrency:
@@ -45,6 +44,8 @@ jobs:
     permissions:
       # for actions/checkout to fetch code
       contents: read
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   lint-shell-scripts:
     name: Lint Shell Scripts 📜🔍
@@ -55,6 +56,8 @@ jobs:
     permissions:
       # for actions/checkout to fetch code
       contents: read
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-test-container:
     name: Build Test Container 🛠️ ✅ 🐳
@@ -72,12 +75,13 @@ jobs:
       ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
-    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
       # for docker/build-push-action to push the Docker image to GitHub Container Registry
       packages: write
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   trivy-scan-and-upload:
     name: Scan Image For Vulnerabilities 🛡️🔍
@@ -89,7 +93,6 @@ jobs:
       image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
-    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
@@ -97,6 +100,8 @@ jobs:
       security-events: write
       # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
       actions: read
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cleanup-ci-container-build-tag:
     name: GHCR Clean Up 'ci-container-build' Image Tag 🧹🏷️
@@ -108,12 +113,13 @@ jobs:
       image_name: ${{ vars.IMAGE_NAME }}
       image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
       username: ${{ vars.USERNAME_GITHUB }}
-    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
       # for ghcr-io-cleanup-action to clean up the image tag
       packages: write
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cleanup-buildcache-image-tag:
     name: GHCR Clean Up 'buildcache' Image Tag 🧹🏷️
@@ -125,9 +131,10 @@ jobs:
       image_name: ${{ vars.BUILDCACHE_NAME }}
       image_tag_to_exclude: ${{ vars.BUILDCACHE_TAG }}
       username: ${{ vars.USERNAME_GITHUB }}
-    secrets: inherit
     permissions:
       # for actions/checkout to fetch code
       contents: read
       # for ghcr-io-cleanup-action to clean up the image tag
       packages: write
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}

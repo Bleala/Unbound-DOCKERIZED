@@ -20,4 +20,3 @@ jobs:
       pull-requests: read
     secrets:
       GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
