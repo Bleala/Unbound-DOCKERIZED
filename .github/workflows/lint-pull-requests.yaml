@@ -2,7 +2,7 @@ name: Validate Pull Requests 🏷️✅
 run-name: Validate Pull Requests 🏷️✅
 
 on:
-  pull_request_target:
+  pull_request:
     branches: 
       - main
       - dev
