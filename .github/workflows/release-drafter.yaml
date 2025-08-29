@@ -5,14 +5,12 @@ on:
     # branches to consider in the event; optional, defaults to all
     branches:
       - main
-  # pull_request_target event is required for autolabeler to support PRs from forks
-  pull_request_target:
+  # pull_request event is required only for autolabeler
+  pull_request:
     types:
       - opened
       - reopened
       - synchronize
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -22,10 +20,11 @@ jobs:
   draft-release-notes:
     name: Draft Release Notes 📝🎉
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-release-drafter.yaml@main
-    secrets: inherit
     permissions:
       # write permission is required to create a github release
       contents: write
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
       pull-requests: write
+    secrets:
+      GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
