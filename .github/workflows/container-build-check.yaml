@@ -7,9 +7,6 @@ on:
       - main
     paths:
       - 'docker/**'
-      - '.gitea/**'
-      - '.github/**'
-#  pull_request_target:
   pull_request:
     branches: 
       - main
