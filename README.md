@@ -387,13 +387,13 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 ---
 
 ## Versions
-**1.23.0 - 30.05.2025:**
+**1.23.1 - 30.08.2025:**
 * Initial Release.
-* Unbound Version: 1.23.0
-* Alpine Version: 3.21.3
+* Unbound Version: 1.23.1
+* Alpine Version: 3.22.1
 
 **Current Versions:**<br>
-* Unbound 1.23.0, Alpine 3.21.3
+* Unbound 1.23.1, Alpine 3.22.1
 
 <details>
 <summary>Old Version History</summary><br>
