@@ -11,6 +11,8 @@ on:
     branches: 
       - main
       - dev
+    paths:
+      - 'docker/**'
   workflow_dispatch:
     inputs:
       source:
