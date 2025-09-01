@@ -200,7 +200,6 @@ jobs:
           done
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY "${images[@]}"
 
-
       # https://github.com/marketplace/actions/ghcr-io-cleanup-action
       - name: GHCR Clean Up 'pre-release-dev' Image Tag 🧹🏷️
         id: ghcr-clean-up-pre-release-dev

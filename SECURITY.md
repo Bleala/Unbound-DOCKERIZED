@@ -25,7 +25,7 @@ If you discover a security vulnerability, please report it privately through **G
 
 I will do my best to:
 * Acknowledge receipt of your report.
-* Provide an initial assessmen.
+* Provide an initial assessment.
 * Keep you updated on the progress of a fix.
 
 ## Security Practices
