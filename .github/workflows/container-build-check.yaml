@@ -29,7 +29,7 @@ env:
   BUILDCACHE_TAG: ${{ vars.BUILDCACHE_TAG }}
   DOCKERFILE_PATH: ${{ vars.DOCKERFILE_PATH }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
-  IMAGE_TAG_CI_DOCKER_BUILD: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
+  IMAGE_TAG_CI_CONTAINER_BUILD: ${{ vars.IMAGE_TAG_CI_CONTAINER_BUILD }}
   PLATFORMS_TO_BUILD: ${{ vars.PLATFORMS_TO_BUILD }}
   REGISTRY_GITHUB: ${{ vars.REGISTRY_GITHUB }}
   SHELLCHECK_EXCLUDE_PATHS: ${{ vars.SHELLCHECK_EXCLUDE_PATHS }}
@@ -70,7 +70,7 @@ jobs:
       buildcache_name: ${{ vars.BUILDCACHE_NAME }}
       buildcache_tag: ${{ vars.BUILDCACHE_TAG }}
       image_name: ${{ vars.IMAGE_NAME }}
-      image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
+      image_tag: ${{ vars.IMAGE_TAG_CI_CONTAINER_BUILD }}
       platforms: ${{ vars.PLATFORMS_TO_BUILD }}
       push: true
       ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
@@ -91,7 +91,7 @@ jobs:
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-trivy-scan-and-upload.yaml@main
     with:
       image_name: ${{ vars.IMAGE_NAME }}
-      image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
+      image_tag: ${{ vars.IMAGE_TAG_CI_CONTAINER_BUILD }}
       registry: ${{ vars.REGISTRY_GITHUB }}
       username: ${{ vars.USERNAME_GITHUB }}
     permissions:
@@ -112,7 +112,7 @@ jobs:
     if: always()
     with:
       image_name: ${{ vars.IMAGE_NAME }}
-      image_tag: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
+      image_tag: ${{ vars.IMAGE_TAG_CI_CONTAINER_BUILD }}
       username: ${{ vars.USERNAME_GITHUB }}
     permissions:
       # for actions/checkout to fetch code
