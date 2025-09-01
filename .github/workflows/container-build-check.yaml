@@ -32,6 +32,7 @@ env:
   IMAGE_TAG_CI_DOCKER_BUILD: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
   PLATFORMS_TO_BUILD: ${{ vars.PLATFORMS_TO_BUILD }}
   REGISTRY_GITHUB: ${{ vars.REGISTRY_GITHUB }}
+  SHELLCHECK_EXCLUDE_PATHS: ${{ vars.SHELLCHECK_EXCLUDE_PATHS }}
   USERNAME_GITHUB: ${{ vars.USERNAME_GITHUB }}
 
 jobs:
@@ -51,7 +52,7 @@ jobs:
     name: Lint Shell Scripts 📜🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-shell-scripts-linter.yaml@main
     with:
-      exclude_paths: "LICENSE,docker/Dockerfile"
+      exclude_paths:  ${{ vars.SHELLCHECK_EXCLUDE_PATHS }}
       ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
     permissions:
       # for actions/checkout to fetch code
