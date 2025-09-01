@@ -27,6 +27,7 @@ concurrency:
 env:
   BUILDCACHE_NAME: ${{ vars.BUILDCACHE_NAME }}
   BUILDCACHE_TAG: ${{ vars.BUILDCACHE_TAG }}
+  DOCKERFILE_PATH: ${{ vars.DOCKERFILE_PATH }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
   IMAGE_TAG_CI_DOCKER_BUILD: ${{ vars.IMAGE_TAG_CI_DOCKER_BUILD }}
   PLATFORMS_TO_BUILD: ${{ vars.PLATFORMS_TO_BUILD }}
@@ -38,7 +39,7 @@ jobs:
     name: Lint Dockerfile 🐳📄🔍
     uses: Bleala/Reusable-Workflows/.github/workflows/reusable-dockerfile-linter.yaml@main
     with:
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ${{ vars.DOCKERFILE_PATH }}
       ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || (github.event_name == 'workflow_dispatch' && github.event.inputs.source) || github.ref }}
     permissions:
       # for actions/checkout to fetch code
