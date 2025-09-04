@@ -88,7 +88,7 @@ RUN curl -sSL https://www.internic.net/domain/named.root -o /var/unbound/root.hi
 # -----------------------------------------------------------------------------------------------
 
 # Set Alpine as the base image
-FROM alpine:${ALPINE_VERSION}
+FROM alpine:${ALPINE_VERSION} AS unbound
 
 # Build arguments
 ARG ALPINE_VERSION \
