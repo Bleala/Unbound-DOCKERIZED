@@ -1,6 +1,5 @@
 # Global variables
 ARG ALPINE_VERSION="3.22.1" \
-    BUILD_DATE="2025-08-27T20:00:00Z" \
     UNBOUND_USER="unbound" \
     UNBOUND_VERSION="1.23.1"
 
@@ -11,21 +10,9 @@ FROM alpine:${ALPINE_VERSION} AS unbound-build
 
 # Set arguments for Unbound version and build date
 ARG ALPINE_VERSION \
-    BUILD_DATE \
     UNBOUND_USER \
     UNBOUND_VERSION \
     UNBOUND_DOWNLOAD="https://nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz"
-
-# Set labels
-LABEL org.opencontainers.image.authors="Bleala" \
-      org.opencontainers.image.vendor="Bleala" \
-      org.opencontainers.image.version="${UNBOUND_VERSION}" \
-      org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="Unbound-DOCKERIZED" \
-      org.opencontainers.image.description="Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!" \
-      org.opencontainers.image.documentation="https://unbound.docs.nlnetlabs.nl/en/latest/" \
-      org.opencontainers.image.url="https://hub.docker.com/r/bleala/unbound" \
-      org.opencontainers.image.source="https://github.com/Bleala/Unbound-DOCKERIZED"
 
 # Set shell to ash
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -97,17 +84,6 @@ RUN curl -sSL https://www.internic.net/domain/named.root -o /var/unbound/root.hi
     /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || true && \
     # Move unbound.conf to unbound.conf.default
     mv /etc/unbound/unbound.conf /etc/unbound/unbound.conf.default
-  
-# Set workdir to the tmp directory
-WORKDIR /tmp
-
-# Finalize the build stage
-RUN set -x && \
-    rm -rf /tmp/unbound-build && \
-    # Clean up build dependencies
-    apk del .build-deps && \
-    # Echo the build date
-    echo "Build date: ${BUILD_DATE}" > /opt/unbound/build_date.txt
 
 # -----------------------------------------------------------------------------------------------
 
@@ -116,7 +92,6 @@ FROM alpine:${ALPINE_VERSION}
 
 # Build arguments
 ARG ALPINE_VERSION \
-    BUILD_DATE \
     UNBOUND_USER \
     UNBOUND_USER_UID="1000" \
     UNBOUND_USER_GID="1000" \
@@ -137,17 +112,6 @@ ENV PATH="/opt/unbound/sbin:${PATH}" \
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD nslookup -timeout=1 -retry=1 google.com 127.0.0.1 || exit 1
-
-# Set labels
-LABEL org.opencontainers.image.authors="Bleala" \
-      org.opencontainers.image.vendor="Bleala" \
-      org.opencontainers.image.version="${UNBOUND_VERSION}" \
-      org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="Unbound-DOCKERIZED" \
-      org.opencontainers.image.description="Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!" \
-      org.opencontainers.image.documentation="https://unbound.docs.nlnetlabs.nl/en/latest/" \
-      org.opencontainers.image.url="https://hub.docker.com/r/bleala/unbound" \
-      org.opencontainers.image.source="https://github.com/Bleala/Unbound-DOCKERIZED"
 
 # Set workdir
 WORKDIR /var/unbound
@@ -185,7 +149,22 @@ RUN chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /opt/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /etc/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /var/unbound && \
     chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /files && \
-    chmod +x /files/scripts/*.sh 
+    chmod +x /files/scripts/*.sh
+
+# Set build date argument here, because caching would break otherwise
+# It is set during the build process in the reusable workflow
+ARG BUILD_DATE
+
+# Set labels
+LABEL org.opencontainers.image.authors="Bleala" \
+      org.opencontainers.image.vendor="Bleala" \
+      org.opencontainers.image.version="${UNBOUND_VERSION}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="Unbound-DOCKERIZED" \
+      org.opencontainers.image.description="Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!" \
+      org.opencontainers.image.documentation="https://unbound.docs.nlnetlabs.nl/en/latest/" \
+      org.opencontainers.image.url="https://hub.docker.com/r/bleala/unbound" \
+      org.opencontainers.image.source="https://github.com/Bleala/Unbound-DOCKERIZED"
 
 # DNS Ports
 EXPOSE 53/tcp
