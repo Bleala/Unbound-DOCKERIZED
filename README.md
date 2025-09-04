@@ -1,4 +1,5 @@
 # [Unbound](https://unbound.docs.nlnetlabs.nl/en/latest/ "Official Documentation")-DOCKERIZED
+
 [![Image Version](https://img.shields.io/github/v/release/Bleala/Unbound-DOCKERIZED?sort=semver&display_name=tag&style=flat&label=Version&link=https%3A%2F%2Fgithub.com%2FBleala%2FUnbound-DOCKERIZED%2Freleases)](https://github.com/Bleala/Unbound-DOCKERIZED/releases)
 [![Docker Stars](https://img.shields.io/docker/stars/bleala/unbound?style=flat&label=Docker%20Stars)](https://hub.docker.com/r/bleala/unbound)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bleala/unbound?style=flat&label=Docker%20Pulls)](https://hub.docker.com/r/bleala/unbound)
@@ -9,11 +10,13 @@ Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!
 ---
 
 ## About Unbound
+
 **Disclaimer:** I am just the maintainer of this docker container, I did not write the software. Visit the [Official Unbound Website](https://nlnetlabs.nl/projects/unbound/about/ "Official Unbound Website") or the [Official Unbound Github Repository](https://github.com/NLnetLabs/unbound "Unbound Github Repository") to thank the author(s)! :)
 
 Unbound is a validating, recursive, and caching DNS resolver. It is designed to be fast and lean and incorporates modern features based on open standards.
 
 Some of the core features of Unbound are:
+
 * **DNSSEC:** Validates the authenticity and integrity of DNS responses.
 * **Caching:** Stores DNS responses to increase speed for subsequent requests and reduce the load on upstream servers.
 * **Highly Configurable:** Offers a wide range of options to fine-tune its behaviour.
@@ -23,21 +26,21 @@ Some of the core features of Unbound are:
 
 ## Links
 
-Official Website: https://nlnetlabs.nl/projects/unbound/about/
+Official Website: <https://nlnetlabs.nl/projects/unbound/about/>
 
-Official Github Repository: https://github.com/NLnetLabs/unbound
+Official Github Repository: <https://github.com/NLnetLabs/unbound>
 
-Docs: https://unbound.docs.nlnetlabs.nl/en/latest/
+Docs: <https://unbound.docs.nlnetlabs.nl/en/latest/>
 
-My Github Repository: https://github.com/Bleala/Unbound-DOCKERIZED
+My Github Repository: <https://github.com/Bleala/Unbound-DOCKERIZED>
 
 ---
 
 ## Downloads
 
-Docker Hub: https://hub.docker.com/r/bleala/unbound
+Docker Hub: <https://hub.docker.com/r/bleala/unbound>
 
-Github Container Registry: https://github.com/Bleala/Unbound-DOCKERIZED/pkgs/container/unbound
+Github Container Registry: <https://github.com/Bleala/Unbound-DOCKERIZED/pkgs/container/unbound>
 
 ---
 
@@ -62,6 +65,7 @@ I am using semantic versioning for this image. For all supported architectures t
 There are also several platforms supported:
 
 Platforms:
+
 * linux/amd64
 * linux/arm64
 * linux/arm/v7
@@ -73,19 +77,20 @@ Platforms:
 To ensure the authenticity and integrity of my images, all `bleala/unbound` images pushed to `Docker Hub` and `GitHub Container Registry` (and maybe more in the future) are signed using [Cosign](https://github.com/sigstore/cosign "Cosign").
 
 I use a static key pair for signing. The public key required for verification, `cosign.pub`, is available in the root of this GitHub repository:
+
 * **Public Key:** [`cosign.pub`](https://github.com/Bleala/Unbound-DOCKERIZED/blob/main/cosign.pub "cosign.pub")
 
 ### How to Verify an Image
 
 You can verify the signature of an image to ensure it hasn't been tampered with and originates from me.
 
-1.  **Install Cosign:**
+1. **Install Cosign:**
     If you don't have Cosign installed, follow the official installation instructions: [Cosign Installation Guide](https://docs.sigstore.dev/cosign/system_config/installation/ "Cosign Installation Guide").
 
-2.  **Obtain the Public Key:**
+2. **Obtain the Public Key:**
     Download the [`cosign.pub`](https://github.com/Bleala/Unbound-DOCKERIZED/blob/main/cosign.pub "cosign.pub") file from this repository or clone the repository to access it locally.
 
-3.  **Verify the Image:**
+3. **Verify the Image:**
     Use the `cosign verify` command. It is highly recommended to verify against the image **digest** (e.g., `sha256:...`) rather than a mutable tag (like `latest` or `1.23.0`). You can find image digests on Docker Hub or GitHub Container Registry.
 
     ```bash
@@ -100,13 +105,14 @@ You can verify the signature of an image to ensure it hasn't been tampered with 
     ```
 
     For instance, to verify the `dev` tag with the following digest `sha256:94aa316e0aa6a845f8e275946df1280c589d3b2104c08dc3ae838eb208b9aed7`:
+
     ```bash
     cosign verify --key cosign.pub docker.io/bleala/unbound@sha256:94aa316e0aa6a845f8e275946df1280c589d3b2104c08dc3ae838eb208b9aed7
     ```
 
     A successful verification will output information like this:
 
-    ```
+    ```bash
     cosign verify --key cosign.pub docker.io/bleala/unbound@sha256:94aa316e0aa6a845f8e275946df1280c589d3b2104c08dc3ae838eb208b9aed7
 
     Verification for index.docker.io/bleala/unbound@sha256:94aa316e0aa6a845f8e275946df1280c589d3b2104c08dc3ae838eb208b9aed7 --
@@ -124,7 +130,7 @@ You can verify the signature of an image to ensure it hasn't been tampered with 
 
 To start the container you can run the following
 
-```
+```bash
 docker run -d -p 53:53/udp -p 53:53/tcp \
         -v /path/to/your/config:/etc/unbound/unbound.conf \
         bleala/unbound:latest
@@ -179,19 +185,19 @@ services:
 
 You can start the docker-compose.yml with the following command
 
-```
+```bash
 docker compose up -d
 ```
 
 If you want to see the container logs, you can run
 
-```
+```bash
 docker compose logs -f
 ```
 
 or
 
-```
+```bash
 docker logs -f unbound
 ```
 
@@ -202,14 +208,14 @@ docker logs -f unbound
 If you do not mount your own `unbound.conf` inside the container, `Unbound` will use the default `unbound.conf` I provided.<br>
 The default config will just act as a DNS forwarder and will send your DNS requests to Cloudflare using DNS over TLS.
 
-In this projects GitHub repository, you will find the `unbound.conf` ([Link](https://github.com/Bleala/Unbound-DOCKERIZED/tree/main/docker/files/examples "unbound.conf")) that can serve as a starting point and which is the default `unbound.conf`, if you do not provide your own.
+In this projects GitHub repository, you will find the `unbound.conf` ([unbound.conf](https://github.com/Bleala/Unbound-DOCKERIZED/tree/main/docker/files/examples "unbound.conf")) that can serve as a starting point and which is the default `unbound.conf`, if you do not provide your own.
 
 You can also mount a local configuration file named `unbound.conf` into the container (`/etc/unbound/unbound.conf`) to use your own `Unbound` configuration.<br>
 You can find all possible configuration options in the [official Unbound documentation](https://unbound.docs.nlnetlabs.nl/en/latest/manpages/unbound.conf.html).
 
 If you prodive your own `unbound.conf` I suggest that you include the following config:
 
-```
+```conf
   # User to drop privileges to after binding ports.
   # This must match the user created in your Dockerfile.
   username: "unbound"
@@ -237,7 +243,7 @@ If you prodive your own `unbound.conf` I suggest that you include the following 
 As `Unbound` is compiled with the corresponding flags ([see Dockerfile](https://github.com/Bleala/Unbound-DOCKERIZED/blob/main/docker/Dockerfile "Dockerfile")) during the build process, you should add this config.<br>
 The default runtime directory for `Unbound` inside the container is `/var/unbound`.
 
-**Attention:** A faulty `unbound.conf` can lead to a complete breakdown of DNS resolution in your network. Test your configuration carefully! 
+**Attention:** A faulty `unbound.conf` can lead to a complete breakdown of DNS resolution in your network. Test your configuration carefully!
 
 I recommend to test your configuration directly with the container like this:
 
@@ -347,7 +353,7 @@ You can set three different environment variables if you want to:
 
 | **Variable** | **Info** | **Value** |
 |:----:|:----:|:----:|
-|   `TZ`   |   To set the correct container and log time   |   optional, default to `Europe/Vienna`, look [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones") for possible values  |
+|   `TZ`   |   To set the correct container and log time   |   optional, default to `Europe/Vienna`, look [here for possible values](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones")  |
 |   `UNBOUND_CONFIG`   |   Set a custom path where `unbound` should look for an `unbound.conf`    |   optional, default to `/etc/unbound/unbound.conf` |
 |   `UNBOUND_ROOT_FILE`   |   Set a custom path where `unbound` should look for the `root.key`    |   optional, default to `/var/unbound/root.key` |
 
@@ -357,20 +363,20 @@ You can set three different environment variables if you want to:
 
 Clone this repo and then:
 
-```
+```bash
 cd Unbound-DOCKERIZED/docker
 docker build -t bleala/unbound:dev .
 ```
 
 Or you can use the provided [docker-compose.override.yml](https://github.com/Bleala/Unbound-DOCKERIZED/blob/master/docker/docker-compose.override.yml "docker-compose.override.yml") file:
 
-```
+```bash
 docker compose -f docker-compose.override.yml build
 ```
 
 For more information on using multiple compose files [see here](https://docs.docker.com/compose/production/). You can also find a prebuilt docker image from [Docker Hub](https://hub.docker.com/r/bleala/unbound/ "Docker Hub"), which can be pulled with this command:
 
-```
+```bash
 docker pull bleala/unbound:latest
 ```
 
@@ -387,18 +393,22 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 ---
 
 ## Versions
+
 **1.23.1 - 30.08.2025:**
+
 * Initial Release.
 * Unbound Version: 1.23.1
 * Alpine Version: 3.22.1
 
 **Current Versions:**<br>
+
 * Unbound 1.23.1, Alpine 3.22.1
 
 <details>
 <summary>Old Version History</summary><br>
 
 **1.23.0 - 30.05.2025:**
+
 * Initial Release.
 * Unbound Version: 1.23.0
 * Alpine Version: 3.21.3
@@ -406,5 +416,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 </details>
 
 ---
+
 ### Hope you enjoy it! :)
+
 ---
