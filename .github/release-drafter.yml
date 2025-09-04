@@ -44,6 +44,9 @@ template: |
   Download at Github Container Registry:
   https://github.com/Bleala/Unbound-DOCKERIZED/pkgs/container/unbound
 
+  Download at Quay.io:
+  https://quay.io/repository/bleala/unbound
+
   ## 🏷️ Versions
   * Unbound: 
   * Alpine: 
