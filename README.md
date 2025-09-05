@@ -139,6 +139,7 @@ docker run -d -p 53:53/udp -p 53:53/tcp \
 But since docker compose is easier to maintain, I'll give you a valid docker compose example.
 
 ```docker-compose.yml
+---
 networks:
   unbound:
     name: unbound
@@ -166,7 +167,7 @@ services:
       - path: .env
         required: false
     networks:
-      unbound:
+      unbound: {}
     ports:
       - target: 53
         published: 53
@@ -298,6 +299,7 @@ Example:
 <summary>Complete docker-compose.yml with the `user` key</summary><br>
 
 ```docker-compose.yml
+---
 networks:
   unbound:
     name: unbound
@@ -326,7 +328,7 @@ services:
       - path: .env
         required: false
     networks:
-      unbound:
+      unbound: {}
     ports:
       - target: 53
         published: 53
