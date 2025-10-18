@@ -1,7 +1,7 @@
 # Global variables
-ARG ALPINE_VERSION="3.22.1" \
+ARG ALPINE_VERSION="3.22.2" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.23.1"
+    UNBOUND_VERSION="1.24.0"
 
 # -----------------------------------------------------------------------------------------------
 
@@ -27,11 +27,13 @@ RUN set -x && \
       build-base=~0.5 \
       pkgconf=~2.4.3 \
       curl=~8.14.1 \
-      openssl-dev=~3.5.2 \
-      expat-dev=~2.7.1 \
+      openssl-dev=~3.5.4 \
+      expat-dev=~2.7.3 \
       libevent-dev=~2.1.12 \
       protobuf-c-dev=~1.5.2 \
       nghttp2-dev=~1.65.0 \
+      # Temporarily disabled
+      # ngtcp2-dev=~1.12.0 \
       hiredis-dev=~1.3.0 \
       libsodium-dev=~1.0.20 && \
     # Download Unbound
@@ -48,6 +50,10 @@ WORKDIR /tmp/unbound-build/unbound-${UNBOUND_VERSION}
 
 # Build Unbound
 RUN set -x && \
+    # Fix Quic for Openssl 3.5.x --> error: implicit declaration of function 'SSL_set_quic_early_data_enabled'; did you mean 'SSL_set_quic_tls_early_data_enabled'?
+    # GitHub Issue: https://github.com/NLnetLabs/unbound/issues/1306
+    # Temporarily disabled
+    # sed -i 's/SSL_set_quic_early_data_enabled/SSL_set_quic_tls_early_data_enabled/g' services/listen_dnsport.c && \
     # Configure Unbound
     ./configure \
       --prefix=/opt/unbound \
@@ -62,11 +68,15 @@ RUN set -x && \
       --with-libevent \
       --with-libhiredis \
       --with-libnghttp2 \
+      # Temporarily disabled
+      # --with-libngtcp2 \
       --with-libsodium=/usr \
       --enable-cachedb \
       --enable-dnscrypt \
       --enable-dnstap \
       --enable-event-api \
+      --enable-pie \
+      --enable-relro-now \
       --enable-subnet \
       --enable-tfo-server \
       --enable-tfo-client \
@@ -111,7 +121,7 @@ ENV PATH="/opt/unbound/sbin:${PATH}" \
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD nslookup -timeout=1 -retry=1 google.com 127.0.0.1 || exit 1
+  CMD nslookup -type=NS -timeout=1 -retry=1 . 127.0.0.1 || exit 1
 
 # Set workdir
 WORKDIR /var/unbound
@@ -119,12 +129,14 @@ WORKDIR /var/unbound
 # Install runtime dependencies
 RUN apk update && \
     apk add --no-cache \
-      openssl=~3.5.2 \
+      openssl=~3.5.4 \
       libevent=~2.1.12 \
       hiredis=~1.3.0 \
       nghttp2-libs=~1.65.0 \
+      # Temporarily disabled
+      # ngtcp2=~1.12.0 \
       libsodium=~1.0.20 \
-      expat=~2.7.1 \
+      expat=~2.7.3 \
       protobuf-c=~1.5.2 \
       tzdata=~2025b
 
