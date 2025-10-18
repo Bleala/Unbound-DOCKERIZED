@@ -32,8 +32,6 @@ RUN set -x && \
       libevent-dev=~2.1.12 \
       protobuf-c-dev=~1.5.2 \
       nghttp2-dev=~1.65.0 \
-      # Temporarily disabled
-      # ngtcp2-dev=~1.12.0 \
       hiredis-dev=~1.3.0 \
       libsodium-dev=~1.0.20 && \
     # Download Unbound
@@ -44,6 +42,8 @@ RUN set -x && \
     echo "$(cat "unbound-${UNBOUND_VERSION}.tar.gz.sha256")" "unbound-${UNBOUND_VERSION}.tar.gz" | sha256sum -c - && \
     # Extract the tarball
     tar -xzf "unbound-${UNBOUND_VERSION}.tar.gz"
+      # Temporarily disabled
+      # ngtcp2-dev=~1.12.0 \
 
 # Set workdir to the extracted Unbound directory
 WORKDIR /tmp/unbound-build/unbound-${UNBOUND_VERSION}
@@ -68,8 +68,6 @@ RUN set -x && \
       --with-libevent \
       --with-libhiredis \
       --with-libnghttp2 \
-      # Temporarily disabled
-      # --with-libngtcp2 \
       --with-libsodium=/usr \
       --enable-cachedb \
       --enable-dnscrypt \
@@ -84,6 +82,8 @@ RUN set -x && \
     # Compile and install Unbound
     make && \
     make install
+      # Temporarily disabled
+      # --with-libngtcp2 \
 
 # Set workdir to var
 WORKDIR /var/unbound
@@ -133,12 +133,12 @@ RUN apk update && \
       libevent=~2.1.12 \
       hiredis=~1.3.0 \
       nghttp2-libs=~1.65.0 \
-      # Temporarily disabled
-      # ngtcp2=~1.12.0 \
       libsodium=~1.0.20 \
       expat=~2.7.1 \
       protobuf-c=~1.5.2 \
       tzdata=~2025b
+      # Temporarily disabled
+      # ngtcp2=~1.12.0 \
 
 # Add Unbound user and group
 RUN addgroup -g "${UNBOUND_USER_GID}" -S "${UNBOUND_USER}" && \
