@@ -396,19 +396,24 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 ## Versions
 
+**1.24.1 - 13.11.2025:**
+
+* Update Unbound to version 1.24.1
+* Fixes [CVE-2025-11411](https://github.com/advisories/GHSA-6w73-x38p-26g5 "CVE-2025-11411")
+
+**Current Versions:**<br>
+
+* Unbound 1.24.1, Alpine 3.22.2
+
+<details>
+<summary>Old Version History</summary><br>
+
 **1.24.0 - 18.10.2025:**
 
 * Enable Pie and Relro for Unbound
 * Change healthcheck to root DNS
 * Update Unbound to version 1.24.0
 * Update Alpine to version 3.22.2
-
-**Current Versions:**<br>
-
-* Unbound 1.24.0, Alpine 3.22.2
-
-<details>
-<summary>Old Version History</summary><br>
 
 **1.23.1 - 30.08.2025:**
 
