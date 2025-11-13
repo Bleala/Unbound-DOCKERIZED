@@ -1,7 +1,7 @@
 # Global variables
 ARG ALPINE_VERSION="3.22.2" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.24.0"
+    UNBOUND_VERSION="1.24.1"
 
 # -----------------------------------------------------------------------------------------------
 

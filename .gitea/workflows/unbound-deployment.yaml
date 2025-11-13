@@ -10,7 +10,7 @@ on:
       tag:
         description: 'Specify the version to build and tag (default: 1.23.1)'
         required: false
-        default: '1.23.1'
+        default: '1.24.1'
         type: string
       source:
         description: 'Specify the branch/tag to build from (default: main)'
