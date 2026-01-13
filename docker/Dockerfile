@@ -1,7 +1,7 @@
 # Global variables
-ARG ALPINE_VERSION="3.22.2" \
+ARG ALPINE_VERSION="3.23.2" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.24.1"
+    UNBOUND_VERSION="1.24.2"
 
 # -----------------------------------------------------------------------------------------------
 
@@ -25,13 +25,13 @@ RUN set -x && \
     apk update && \
     apk add --no-cache --virtual .build-deps \
       build-base=~0.5 \
-      pkgconf=~2.4.3 \
-      curl=~8.14.1 \
+      pkgconf=~2.5.1 \
+      curl=~8.17.0 \
       openssl-dev=~3.5.4 \
       expat-dev=~2.7.3 \
       libevent-dev=~2.1.12 \
       protobuf-c-dev=~1.5.2 \
-      nghttp2-dev=~1.65.0 \
+      nghttp2-dev=~1.68.0 \
       # Temporarily disabled
       # ngtcp2-dev=~1.12.0 \
       hiredis-dev=~1.3.0 \
@@ -132,13 +132,13 @@ RUN apk update && \
       openssl=~3.5.4 \
       libevent=~2.1.12 \
       hiredis=~1.3.0 \
-      nghttp2-libs=~1.65.0 \
+      nghttp2-libs=~1.68.0 \
       # Temporarily disabled
       # ngtcp2=~1.12.0 \
       libsodium=~1.0.20 \
       expat=~2.7.3 \
       protobuf-c=~1.5.2 \
-      tzdata=~2025b
+      tzdata=~2025c
 
 # Add Unbound user and group
 RUN addgroup -g "${UNBOUND_USER_GID}" -S "${UNBOUND_USER}" && \
