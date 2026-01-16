@@ -7,6 +7,45 @@ ARG ALPINE_VERSION="3.23.2" \
 # -----------------------------------------------------------------------------------------------
 
 # Set Alpine as the base image for building Unbound
+FROM alpine:${ALPINE_VERSION} AS ngtcp2-build
+
+ARG ALPINE_VERSION \
+    NGTCP2_VERSION \
+    NGTCP2_DOWNLOAD="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/ngtcp2-${NGTCP2_VERSION}.tar.gz" \
+    NGTCP2_DOWNLOAD_CHECKSUM="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/checksums.txt"
+
+# Set workdir
+WORKDIR /tmp/ngtcp2-build
+
+# Install build dependencies and download ngtcp2 source code
+RUN set -x && \
+    apk update && \
+    apk add --no-cache --virtual .build-deps \
+      build-base=~0.5 \
+      pkgconf=~2.5.1 \
+      curl=~8.17.0 \
+      openssl-dev=~3.5.4 && \
+    # Download ngtcp2
+    curl -sSLO "${NGTCP2_DOWNLOAD}" && \
+    # Download SHA256 checksum
+    curl -sSLO "${NGTCP2_DOWNLOAD_CHECKSUM}" && \
+    # Compare the checksum
+    grep "ngtcp2-${NGTCP2_VERSION}.tar.gz" checksums.txt | sha256sum -c - && \
+    # Extract the tarball
+    tar -xzf "ngtcp2-${NGTCP2_VERSION}.tar.gz"
+
+# Set workdir to the extracted ngtcp2 directory
+WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
+
+# Build ngtcp2
+RUN set -x && \
+    ./configure PLDFLAGS="-Wl,-rpath" && \
+    make -j && \
+    make install
+
+# -----------------------------------------------------------------------------------------------
+
+# Set Alpine as the base image for building Unbound
 FROM alpine:${ALPINE_VERSION} AS unbound-build
 
 # Set arguments for Unbound version and build date
@@ -24,7 +63,7 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # Set workdir
 WORKDIR /tmp/unbound-build
 
-# Install build dependencies and build unbound
+# Install build dependencies and download unbound source code
 RUN set -x && \
     apk update && \
     apk add --no-cache --virtual .build-deps \
@@ -49,28 +88,11 @@ RUN set -x && \
     # Extract the tarball
     tar -xzf "unbound-${UNBOUND_VERSION}.tar.gz"
 
-# Set workdir
-WORKDIR /tmp/ngtcp2-build
+# Copy the ngtcp2 library files
+COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
 
-# Build ngtcp2
-RUN set -x && \
-    # Download ngtcp2
-    curl -sSLO "${NGTCP2_DOWNLOAD}" && \
-    # Download SHA256 checksum
-    curl -sSLO "${NGTCP2_DOWNLOAD_CHECKSUM}" && \
-    # Compare the checksum
-    grep "ngtcp2-${NGTCP2_VERSION}.tar.gz" checksums.txt | sha256sum -c - && \
-    # Extract the tarball
-    tar -xzf "ngtcp2-${NGTCP2_VERSION}.tar.gz"
-
-# Set workdir to the extracted ngtcp2 directory
-WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
-
-# Build ngtcp2
-RUN set -x && \
-    ./configure PLDFLAGS="-Wl,-rpath" && \
-    make -j && \
-    make install
+# Copy the ngtcp2 header files
+COPY --from=ngtcp2-build /usr/local/include /usr/local/include
 
 # Set workdir to the extracted Unbound directory
 WORKDIR /tmp/unbound-build/unbound-${UNBOUND_VERSION}
@@ -178,8 +200,8 @@ COPY --from=unbound-build /etc/unbound /etc/unbound
 # Copy the Unbound run directory
 COPY --from=unbound-build /var/unbound /var/unbound
 
-# Copy the ngtcp2 library files
-COPY --from=unbound-build /usr/local/lib /usr/local/lib
+# Copy the ngtcp2 library files, header files not needed at runtime
+COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
 
 # Copy Files
 COPY files /files
