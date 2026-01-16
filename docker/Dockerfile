@@ -1,7 +1,8 @@
 # Global variables
 ARG ALPINE_VERSION="3.23.2" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.24.2"
+    UNBOUND_VERSION="1.24.2" \
+    NGTCP2_VERSION="1.19.0"
 
 # -----------------------------------------------------------------------------------------------
 
@@ -12,7 +13,10 @@ FROM alpine:${ALPINE_VERSION} AS unbound-build
 ARG ALPINE_VERSION \
     UNBOUND_USER \
     UNBOUND_VERSION \
-    UNBOUND_DOWNLOAD="https://nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz"
+    UNBOUND_DOWNLOAD="https://nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz" \
+    NGTCP2_VERSION \
+    NGTCP2_DOWNLOAD="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/ngtcp2-${NGTCP2_VERSION}.tar.gz" \
+    NGTCP2_DOWNLOAD_CHECKSUM="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/checksums.txt"
 
 # Set shell to ash
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -20,7 +24,7 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # Set workdir
 WORKDIR /tmp/unbound-build
 
-# Install build dependencies, build unbound and remove dependencies
+# Install build dependencies and build unbound
 RUN set -x && \
     apk update && \
     apk add --no-cache --virtual .build-deps \
@@ -32,8 +36,8 @@ RUN set -x && \
       libevent-dev=~2.1.12 \
       protobuf-c-dev=~1.5.2 \
       nghttp2-dev=~1.68.0 \
-      # Temporarily disabled
-      # ngtcp2-dev=~1.12.0 \
+      # Manually build ngtcp2
+      # ngtcp2-dev=~1.17.0 \
       hiredis-dev=~1.3.0 \
       libsodium-dev=~1.0.20 && \
     # Download Unbound
@@ -45,6 +49,29 @@ RUN set -x && \
     # Extract the tarball
     tar -xzf "unbound-${UNBOUND_VERSION}.tar.gz"
 
+# Set workdir
+WORKDIR /tmp/ngtcp2-build
+
+# Build ngtcp2
+RUN set -x && \
+    # Download ngtcp2
+    curl -sSLO "${NGTCP2_DOWNLOAD}" && \
+    # Download SHA256 checksum
+    curl -sSLO "${NGTCP2_DOWNLOAD_CHECKSUM}" && \
+    # Compare the checksum
+    grep "ngtcp2-${NGTCP2_VERSION}.tar.gz" checksums.txt | sha256sum -c - && \
+    # Extract the tarball
+    tar -xzf "ngtcp2-${NGTCP2_VERSION}.tar.gz"
+
+# Set workdir to the extracted ngtcp2 directory
+WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
+
+# Build ngtcp2
+RUN set -x && \
+    ./configure PLDFLAGS="-Wl,-rpath" && \
+    make -j && \
+    make install
+
 # Set workdir to the extracted Unbound directory
 WORKDIR /tmp/unbound-build/unbound-${UNBOUND_VERSION}
 
@@ -52,8 +79,7 @@ WORKDIR /tmp/unbound-build/unbound-${UNBOUND_VERSION}
 RUN set -x && \
     # Fix Quic for Openssl 3.5.x --> error: implicit declaration of function 'SSL_set_quic_early_data_enabled'; did you mean 'SSL_set_quic_tls_early_data_enabled'?
     # GitHub Issue: https://github.com/NLnetLabs/unbound/issues/1306
-    # Temporarily disabled
-    # sed -i 's/SSL_set_quic_early_data_enabled/SSL_set_quic_tls_early_data_enabled/g' services/listen_dnsport.c && \
+    sed -i 's/SSL_set_quic_early_data_enabled/SSL_set_quic_tls_early_data_enabled/g' services/listen_dnsport.c && \
     # Configure Unbound
     ./configure \
       --prefix=/opt/unbound \
@@ -68,8 +94,7 @@ RUN set -x && \
       --with-libevent \
       --with-libhiredis \
       --with-libnghttp2 \
-      # Temporarily disabled
-      # --with-libngtcp2 \
+      --with-libngtcp2 \
       --with-libsodium=/usr \
       --enable-cachedb \
       --enable-dnscrypt \
@@ -82,7 +107,7 @@ RUN set -x && \
       --enable-tfo-client \
       --disable-static && \
     # Compile and install Unbound
-    make && \
+    make -j && \
     make install
 
 # Set workdir to var
@@ -133,8 +158,8 @@ RUN apk update && \
       libevent=~2.1.12 \
       hiredis=~1.3.0 \
       nghttp2-libs=~1.68.0 \
-      # Temporarily disabled
-      # ngtcp2=~1.12.0 \
+      # Manually build ngtcp2 --> copy from build stage
+      # ngtcp2=~1.17.0 \
       libsodium=~1.0.20 \
       expat=~2.7.3 \
       protobuf-c=~1.5.2 \
@@ -152,6 +177,9 @@ COPY --from=unbound-build /etc/unbound /etc/unbound
 
 # Copy the Unbound run directory
 COPY --from=unbound-build /var/unbound /var/unbound
+
+# Copy the ngtcp2 library files
+COPY --from=unbound-build /usr/local/lib /usr/local/lib
 
 # Copy Files
 COPY files /files
