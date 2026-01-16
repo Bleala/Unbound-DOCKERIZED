@@ -14,6 +14,9 @@ ARG ALPINE_VERSION \
     NGTCP2_DOWNLOAD="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/ngtcp2-${NGTCP2_VERSION}.tar.gz" \
     NGTCP2_DOWNLOAD_CHECKSUM="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/checksums.txt"
 
+# Set shell options
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
 # Set workdir
 WORKDIR /tmp/ngtcp2-build
 
@@ -57,7 +60,7 @@ ARG ALPINE_VERSION \
     NGTCP2_DOWNLOAD="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/ngtcp2-${NGTCP2_VERSION}.tar.gz" \
     NGTCP2_DOWNLOAD_CHECKSUM="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/checksums.txt"
 
-# Set shell to ash
+# Set shell options
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # Set workdir
