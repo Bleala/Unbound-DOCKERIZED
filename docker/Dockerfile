@@ -55,10 +55,7 @@ FROM alpine:${ALPINE_VERSION} AS unbound-build
 ARG ALPINE_VERSION \
     UNBOUND_USER \
     UNBOUND_VERSION \
-    UNBOUND_DOWNLOAD="https://nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz" \
-    NGTCP2_VERSION \
-    NGTCP2_DOWNLOAD="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/ngtcp2-${NGTCP2_VERSION}.tar.gz" \
-    NGTCP2_DOWNLOAD_CHECKSUM="https://github.com/ngtcp2/ngtcp2/releases/download/v${NGTCP2_VERSION}/checksums.txt"
+    UNBOUND_DOWNLOAD="https://nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz"
 
 # Set shell options
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
