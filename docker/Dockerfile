@@ -1,8 +1,8 @@
 # Global variables
-ARG ALPINE_VERSION="3.23.2" \
+ARG ALPINE_VERSION="3.23.3" \
     UNBOUND_USER="unbound" \
     UNBOUND_VERSION="1.24.2" \
-    NGTCP2_VERSION="1.19.0"
+    NGTCP2_VERSION="1.21.0"
 
 # -----------------------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ RUN set -x && \
       build-base=~0.5 \
       pkgconf=~2.5.1 \
       curl=~8.17.0 \
-      openssl-dev=~3.5.4 && \
+      openssl-dev=~3.5.5 && \
     # Download ngtcp2
     curl -sSLO "${NGTCP2_DOWNLOAD}" && \
     # Download SHA256 checksum
@@ -70,8 +70,8 @@ RUN set -x && \
       build-base=~0.5 \
       pkgconf=~2.5.1 \
       curl=~8.17.0 \
-      openssl-dev=~3.5.4 \
-      expat-dev=~2.7.3 \
+      openssl-dev=~3.5.5 \
+      expat-dev=~2.7.4 \
       libevent-dev=~2.1.12 \
       protobuf-c-dev=~1.5.2 \
       nghttp2-dev=~1.68.0 \
