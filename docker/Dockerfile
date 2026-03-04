@@ -176,14 +176,14 @@ WORKDIR /var/unbound
 # Install runtime dependencies
 RUN apk update && \
     apk add --no-cache \
-      openssl=~3.5.4 \
+      openssl=~3.5.5 \
       libevent=~2.1.12 \
       hiredis=~1.3.0 \
       nghttp2-libs=~1.68.0 \
       # Manually build ngtcp2 --> copy from build stage
       # ngtcp2=~1.17.0 \
       libsodium=~1.0.20 \
-      expat=~2.7.3 \
+      expat=~2.7.4 \
       protobuf-c=~1.5.2 \
       tzdata=~2025c
 
