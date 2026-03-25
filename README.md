@@ -52,9 +52,9 @@ I built this image based on [Alpine Linux](https://hub.docker.com/_/alpine "Alpi
 There will always be two different versions:
 
 | Tag | Content |
-| ------------- |:-------------:|
-| latest    | Contains the latest stable version |
-| x.x.x     | Contains the Unbound and Alpine versions mentioned at the bottom of the page and in the release notes |
+| :-------------: | :-------------: |
+| latest | Contains the latest stable version |
+| x.x.x | Contains the Unbound and Alpine versions mentioned at the bottom of the page and in the release notes |
 
 I am using semantic versioning for this image. For all supported architectures there are the following versioned tags:
 
@@ -355,10 +355,10 @@ services:
 You can set three different environment variables if you want to:
 
 | **Variable** | **Info** | **Value** |
-|:----:|:----:|:----:|
-|   `TZ`   |   To set the correct container and log time   |   optional, default to `Europe/Vienna`, look [here for possible values](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones")  |
-|   `UNBOUND_CONFIG`   |   Set a custom path where `unbound` should look for an `unbound.conf`    |   optional, default to `/etc/unbound/unbound.conf` |
-|   `UNBOUND_ROOT_FILE`   |   Set a custom path where `unbound` should look for the `root.key`    |   optional, default to `/var/unbound/root.key` |
+| :----: | :----: | :----: |
+| `TZ` | To set the correct container and log time | optional, default to `Europe/Vienna`, look [here for possible values](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones") |
+| `UNBOUND_CONFIG` | Set a custom path where `unbound` should look for an `unbound.conf` | optional, default to `/etc/unbound/unbound.conf` |
+| `UNBOUND_ROOT_FILE` | Set a custom path where `unbound` should look for the `root.key` | optional, default to `/var/unbound/root.key` |
 
 ---
 
