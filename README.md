@@ -356,7 +356,7 @@ You can set three different environment variables if you want to:
 
 | **Variable** | **Info** | **Value** |
 | :----: | :----: | :----: |
-| `TZ` | To set the correct container and log time | optional, default to `Europe/Vienna`, look [here for possible values](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones") |
+| `TZ` | To set the correct container and log time | optional, default to `Europe/Vienna`, look [here for possible values](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones "Timezones")  |
 | `UNBOUND_CONFIG` | Set a custom path where `unbound` should look for an `unbound.conf` | optional, default to `/etc/unbound/unbound.conf` |
 | `UNBOUND_ROOT_FILE` | Set a custom path where `unbound` should look for the `root.key` | optional, default to `/var/unbound/root.key` |
 
