@@ -4,6 +4,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/bleala/unbound?style=flat&label=Docker%20Stars)](https://hub.docker.com/r/bleala/unbound)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bleala/unbound?style=flat&label=Docker%20Pulls)](https://hub.docker.com/r/bleala/unbound)
 [![Container Build Check 🐳✅](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/container-build-check.yaml/badge.svg)](https://github.com/Bleala/Unbound-DOCKERIZED/actions/workflows/container-build-check.yaml)
+[![Signed by: Sigstore/Cosign](https://img.shields.io/badge/Signed_by-Sigstore%2FCosign-blue?style=flat&logo=sigstore&logoColor=white)](https://github.com/sigstore/cosign)
 
 Unbound - a validating, recursive, and caching DNS resolver. DOCKERIZED!
 
