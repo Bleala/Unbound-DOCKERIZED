@@ -22,7 +22,7 @@ WORKDIR /tmp/ngtcp2-build
 
 # Install build dependencies and download ngtcp2 source code
 RUN set -x && \
-    apk update && \
+    apk update --no-cache && \
     apk add --no-cache --virtual .build-deps \
       build-base=~0.5 \
       curl=~8.17.0 \
@@ -42,8 +42,8 @@ WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
 
 # Build ngtcp2
 RUN set -x && \
-    ./configure PLDFLAGS="-Wl,-rpath" && \
-    make -j && \
+    ./configure LDFLAGS="-Wl,-rpath,/usr/local/lib" && \
+    make -j $(nproc) && \
     make install
 
 # -----------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ WORKDIR /tmp/unbound-build
 
 # Install build dependencies and download unbound source code
 RUN set -x && \
-    apk update && \
+    apk update --no-cache && \
     apk add --no-cache --virtual .build-deps \
       build-base=~0.5 \
       curl=~8.17.0 \
@@ -129,7 +129,7 @@ RUN set -x && \
       --enable-tfo-client \
       --disable-static && \
     # Compile and install Unbound
-    make -j && \
+    make -j $(nproc) && \
     make install
 
 # Set workdir to var
@@ -137,8 +137,11 @@ WORKDIR /var/unbound
 
 # https://unbound.docs.nlnetlabs.nl/en/latest/manpages/unbound-anchor.html
 # Download the root.hints and generate the root.key
+# Exit code 0 = anchor up to date, 1 = anchor updated --> both success
 RUN curl -sSL https://www.internic.net/domain/named.root -o /var/unbound/root.hints && \
-    /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || true && \
+    /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || \
+    ANCHOR_EXIT="${?}"; \
+    if [ "${ANCHOR_EXIT}" -gt 1 ]; then echo "ERROR: Command unbound-anchor failed with exit code ${ANCHOR_EXIT}."; exit 1; fi && \
     # Move unbound.conf to unbound.conf.default
     mv /etc/unbound/unbound.conf /etc/unbound/unbound.conf.default
 
@@ -153,6 +156,9 @@ ARG ALPINE_VERSION \
     UNBOUND_USER_UID="1000" \
     UNBOUND_USER_GID="1000" \
     UNBOUND_VERSION
+
+# Set shell options
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # Set environment variables
     # Set Unbound path
@@ -174,7 +180,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 WORKDIR /var/unbound
 
 # Install runtime dependencies
-RUN apk update && \
+RUN apk update --no-cache && \
     apk add --no-cache \
       expat=~2.7.5 \
       hiredis=~1.3.0 \
@@ -239,4 +245,4 @@ EXPOSE 853/tcp
 EXPOSE 853/udp
 
 # Run start script
-ENTRYPOINT ["sh","/files/scripts/start.sh"]
+ENTRYPOINT ["/files/scripts/start.sh"]
