@@ -6,6 +6,14 @@ then
     # Create trust anchor file on start
     /opt/unbound/sbin/unbound-anchor -a "${UNBOUND_ROOT_FILE:-/var/unbound/root.key}"
 
+    # Check exit code
+    ANCHOR_EXIT="${?}"
+    if [ "${ANCHOR_EXIT}" -gt 1 ]
+    then
+        echo "ERROR: Command unbound-anchor failed with exit code ${ANCHOR_EXIT}."
+        exit 1
+    fi
+
     # Set permissions for the directory
     chmod 644 "${UNBOUND_ROOT_FILE:-/var/unbound/root.key}"
     chown "${UNBOUND_USER:-unbound}":"${UNBOUND_USER:-unbound}" "${UNBOUND_ROOT_FILE:-/var/unbound/root.key}"
