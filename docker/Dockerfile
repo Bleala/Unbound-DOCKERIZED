@@ -43,7 +43,7 @@ WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
 # Build ngtcp2
 RUN set -x && \
     ./configure LDFLAGS="-Wl,-rpath,/usr/local/lib" && \
-    make -j $(nproc) && \
+    make -j "$(nproc)" && \
     make install
 
 # -----------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ RUN set -x && \
       --enable-tfo-client \
       --disable-static && \
     # Compile and install Unbound
-    make -j $(nproc) && \
+    make -j "$(nproc)" && \
     make install
 
 # Set workdir to var
