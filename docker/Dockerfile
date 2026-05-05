@@ -22,12 +22,11 @@ WORKDIR /tmp/ngtcp2-build
 
 # Install build dependencies and download ngtcp2 source code
 RUN set -x && \
-    apk update --no-cache && \
     apk add --no-cache --virtual .build-deps \
-      build-base=~0.5 \
-      curl=~8.17.0 \
-      openssl-dev=~3.5.6 \
-      pkgconf=~2.5.1 && \
+      build-base \
+      curl \
+      openssl-dev \
+      pkgconf && \
     # Download ngtcp2
     curl -sSLO "${NGTCP2_DOWNLOAD}" && \
     # Download SHA256 checksum
@@ -65,20 +64,19 @@ WORKDIR /tmp/unbound-build
 
 # Install build dependencies and download unbound source code
 RUN set -x && \
-    apk update --no-cache && \
     apk add --no-cache --virtual .build-deps \
-      build-base=~0.5 \
-      curl=~8.17.0 \
-      expat-dev=~2.7.5 \
-      hiredis-dev=~1.3.0 \
-      libevent-dev=~2.1.12 \
-      libsodium-dev=~1.0.20 \
-      nghttp2-dev=~1.69.0 \
+      build-base \
+      curl \
+      expat-dev \
+      hiredis-dev \
+      libevent-dev \
+      libsodium-dev \
+      nghttp2-dev \
       # Manually build ngtcp2
-      # ngtcp2-dev=~1.22.1 \
-      openssl-dev=~3.5.6 \
-      pkgconf=~2.5.1 \
-      protobuf-c-dev=~1.5.2 && \
+      # ngtcp2-dev \
+      openssl-dev \
+      pkgconf \
+      protobuf-c-dev && \
     # Download Unbound
     curl -sSLO "${UNBOUND_DOWNLOAD}" && \
     # Download SHA256 checksum
@@ -180,44 +178,39 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 WORKDIR /var/unbound
 
 # Install runtime dependencies
-RUN apk update --no-cache && \
-    apk add --no-cache \
-      expat=~2.7.5 \
-      hiredis=~1.3.0 \
-      libevent=~2.1.12 \
-      libsodium=~1.0.20 \
-      nghttp2-libs=~1.69.0 \
+RUN apk add --no-cache \
+      expat \
+      hiredis \
+      libevent \
+      libsodium \
+      nghttp2-libs \
       # Manually build ngtcp2 --> copy from build stage
-      # ngtcp2=~1.22.1 \
-      openssl=~3.5.6 \
-      protobuf-c=~1.5.2 \
-      tzdata=~2026b
+      # ngtcp2 \
+      openssl \
+      protobuf-c \
+      tzdata
 
 # Add Unbound user and group
 RUN addgroup -g "${UNBOUND_USER_GID}" -S "${UNBOUND_USER}" && \
     adduser -u "${UNBOUND_USER_UID}" -S -D -H -G "${UNBOUND_USER}" "${UNBOUND_USER}"
 
 # Copy Unbound from the build stage 
-COPY --from=unbound-build /opt/unbound /opt/unbound
+COPY --from=unbound-build --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" /opt/unbound /opt/unbound
 
 # Copy the Unbound configuration file
-COPY --from=unbound-build /etc/unbound /etc/unbound
+COPY --from=unbound-build --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" /etc/unbound /etc/unbound
 
 # Copy the Unbound run directory
-COPY --from=unbound-build /var/unbound /var/unbound
+COPY --from=unbound-build --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" /var/unbound /var/unbound
 
 # Copy the ngtcp2 library files, header files not needed at runtime
 COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
 
 # Copy Files
-COPY files /files
+COPY --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" files /files
 
-# Set permissions for Unbound directories and scripts
-RUN chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /opt/unbound && \
-    chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /etc/unbound && \
-    chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /var/unbound && \
-    chown -R "${UNBOUND_USER}":"${UNBOUND_USER}" /files && \
-    chmod +x /files/scripts/*.sh
+# Set permissions for Unbound scripts
+RUN chmod +x /files/scripts/*.sh
 
 # Set build date argument here, because caching would break otherwise
 # It is set during the build process in the reusable workflow
