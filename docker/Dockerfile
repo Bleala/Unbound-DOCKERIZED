@@ -1,12 +1,12 @@
 # Global variables
-ARG ALPINE_VERSION="3.23.3" \
+ARG ALPINE_VERSION="3.23.4" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.24.2" \
-    NGTCP2_VERSION="1.21.0"
+    UNBOUND_VERSION="1.25.0" \
+    NGTCP2_VERSION="1.22.1"
 
 # -----------------------------------------------------------------------------------------------
 
-# Set Alpine as the base image for building Unbound
+# Set Alpine as the base image for building ngtcp2
 FROM alpine:${ALPINE_VERSION} AS ngtcp2-build
 
 ARG ALPINE_VERSION \
@@ -25,9 +25,9 @@ RUN set -x && \
     apk update && \
     apk add --no-cache --virtual .build-deps \
       build-base=~0.5 \
-      pkgconf=~2.5.1 \
       curl=~8.17.0 \
-      openssl-dev=~3.5.5 && \
+      openssl-dev=~3.5.6 \
+      pkgconf=~2.5.1 && \
     # Download ngtcp2
     curl -sSLO "${NGTCP2_DOWNLOAD}" && \
     # Download SHA256 checksum
@@ -68,17 +68,17 @@ RUN set -x && \
     apk update && \
     apk add --no-cache --virtual .build-deps \
       build-base=~0.5 \
-      pkgconf=~2.5.1 \
       curl=~8.17.0 \
-      openssl-dev=~3.5.5 \
-      expat-dev=~2.7.4 \
-      libevent-dev=~2.1.12 \
-      protobuf-c-dev=~1.5.2 \
-      nghttp2-dev=~1.68.0 \
-      # Manually build ngtcp2
-      # ngtcp2-dev=~1.17.0 \
+      expat-dev=~2.7.5 \
       hiredis-dev=~1.3.0 \
-      libsodium-dev=~1.0.20 && \
+      libevent-dev=~2.1.12 \
+      libsodium-dev=~1.0.20 \
+      nghttp2-dev=~1.69.0 \
+      # Manually build ngtcp2
+      # ngtcp2-dev=~1.22.1 \
+      openssl-dev=~3.5.6 \
+      pkgconf=~2.5.1 \
+      protobuf-c-dev=~1.5.2 && \
     # Download Unbound
     curl -sSLO "${UNBOUND_DOWNLOAD}" && \
     # Download SHA256 checksum
@@ -176,16 +176,16 @@ WORKDIR /var/unbound
 # Install runtime dependencies
 RUN apk update && \
     apk add --no-cache \
-      openssl=~3.5.5 \
-      libevent=~2.1.12 \
+      expat=~2.7.5 \
       hiredis=~1.3.0 \
-      nghttp2-libs=~1.68.0 \
-      # Manually build ngtcp2 --> copy from build stage
-      # ngtcp2=~1.17.0 \
+      libevent=~2.1.12 \
       libsodium=~1.0.20 \
-      expat=~2.7.4 \
+      nghttp2-libs=~1.69.0 \
+      # Manually build ngtcp2 --> copy from build stage
+      # ngtcp2=~1.22.1 \
+      openssl=~3.5.6 \
       protobuf-c=~1.5.2 \
-      tzdata=~2025c
+      tzdata=~2026b
 
 # Add Unbound user and group
 RUN addgroup -g "${UNBOUND_USER_GID}" -S "${UNBOUND_USER}" && \
