@@ -43,8 +43,12 @@ WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
 
 # Build ngtcp2
 RUN set -x && \
-    ./configure LDFLAGS="-Wl,-rpath,/usr/local/lib" && \
-    make -j "$(nproc)" && \
+    ./configure \
+      LDFLAGS="-Wl,-rpath,/usr/local/lib" && \
+    # Set max number of cores --> one less than total
+    CORES=$(nproc); CORES=$((CORES > 1 ? CORES - 1 : 1)) && \
+    # Compile and install ngtcp2
+    make -j "${CORES}" && \
     make install
 
 # Strip libraries
@@ -133,8 +137,10 @@ RUN set -x && \
       --enable-tfo-server \
       --enable-tfo-client \
       --disable-static && \
+    # Set max number of cores --> one less than total
+    CORES=$(nproc); CORES=$((CORES > 1 ? CORES - 1 : 1)) && \
     # Compile and install Unbound
-    make -j "$(nproc)" && \
+    make -j "${CORES}" && \
     make install
 
 # Cleanup unused files and reduce binary size
@@ -155,9 +161,9 @@ WORKDIR /var/unbound
 # Download the root.hints and generate the root.key
 # Exit code 0 = anchor up to date, 1 = anchor updated --> both success
 RUN curl -sSL https://www.internic.net/domain/named.root -o /var/unbound/root.hints && \
-    /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || \
-    ANCHOR_EXIT="${?}"; \
-    if [ "${ANCHOR_EXIT}" -gt 1 ]; then echo "ERROR: Command unbound-anchor failed with exit code ${ANCHOR_EXIT}."; exit 1; fi && \
+    ANCHOR_EXIT=0 && \
+    { /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || ANCHOR_EXIT="${?}"; } && \
+    if [ "${ANCHOR_EXIT:-0}" -gt 1 ]; then echo "ERROR: Command unbound-anchor failed with exit code ${ANCHOR_EXIT}."; exit 1; fi && \
     # Move unbound.conf to unbound.conf.default
     mv /etc/unbound/unbound.conf /etc/unbound/unbound.conf.default
 
