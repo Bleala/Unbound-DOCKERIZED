@@ -1,0 +1,8 @@
+[allowlist]
+description = "Ignore Unbound DNSSEC root.key false positive"
+regexes = [
+    '''root\.key'''
+]
+paths = [
+    '''docker/Dockerfile'''
+]
