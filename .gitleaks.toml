@@ -1,5 +1,5 @@
 [allowlist]
-description = "Ignore Unbound DNSSEC root.key false positive"
+description = "Ignore Unbound root.key false positive"
 regexes = [
     '''root\.key'''
 ]
