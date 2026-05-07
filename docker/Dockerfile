@@ -198,9 +198,6 @@ ENV PATH="/opt/unbound/sbin:${PATH}" \
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD nslookup -type=NS -timeout=1 -retry=1 . 127.0.0.1 || exit 1
 
-# Set workdir
-WORKDIR /var/unbound
-
 # Install runtime dependencies
 RUN apk add --no-cache \
       expat \
@@ -232,6 +229,10 @@ COPY --from=ngtcp2-build /usr/local/lib/libngtcp2*.so* /usr/local/lib
 
 # Copy Files and set permissions (/files/scripts/*.sh need to be executable)
 COPY --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" --chmod=755 files /files
+
+# Set workdir
+# Needs to be after COPY --> otherwise would be owned by root
+WORKDIR /var/unbound
 
 # Set build date argument here, because caching would break otherwise
 # It is set during the build process in the reusable workflow
