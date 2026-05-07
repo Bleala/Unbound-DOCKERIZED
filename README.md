@@ -404,6 +404,8 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 * Update ngtcp2 to version 1.22.1
 * Add Quic support
 * Update workflow dependencies
+* Remove package pinning and stick to alpine image packages
+* Strip files for lower image size
 
 **Current Versions:**<br>
 

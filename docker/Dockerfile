@@ -23,6 +23,8 @@ WORKDIR /tmp/ngtcp2-build
 # Install build dependencies and download ngtcp2 source code
 RUN set -x && \
     apk add --no-cache --virtual .build-deps \
+      # For strip command to reduce binary size
+      binutils \
       build-base \
       curl \
       openssl-dev \
@@ -41,9 +43,16 @@ WORKDIR /tmp/ngtcp2-build/ngtcp2-${NGTCP2_VERSION}
 
 # Build ngtcp2
 RUN set -x && \
-    ./configure LDFLAGS="-Wl,-rpath,/usr/local/lib" && \
-    make -j "$(nproc)" && \
+    ./configure \
+      LDFLAGS="-Wl,-rpath,/usr/local/lib" && \
+    # Set max number of cores --> one less than total
+    CORES=$(nproc); CORES=$((CORES > 1 ? CORES - 1 : 1)) && \
+    # Compile and install ngtcp2
+    make -j "${CORES}" && \
     make install
+
+# Strip libraries
+RUN find /usr/local/lib -type f -name "*.so*" -exec strip --strip-unneeded {} +
 
 # -----------------------------------------------------------------------------------------------
 
@@ -65,6 +74,8 @@ WORKDIR /tmp/unbound-build
 # Install build dependencies and download unbound source code
 RUN set -x && \
     apk add --no-cache --virtual .build-deps \
+      # For strip command to reduce binary size
+      binutils \
       build-base \
       curl \
       expat-dev \
@@ -126,9 +137,22 @@ RUN set -x && \
       --enable-tfo-server \
       --enable-tfo-client \
       --disable-static && \
+    # Set max number of cores --> one less than total
+    CORES=$(nproc); CORES=$((CORES > 1 ? CORES - 1 : 1)) && \
     # Compile and install Unbound
-    make -j "$(nproc)" && \
+    make -j "${CORES}" && \
     make install
+
+# Cleanup unused files and reduce binary size
+RUN rm -rf /opt/unbound/include \
+           /opt/unbound/share \
+           /opt/unbound/lib/pkgconfig \
+           /opt/unbound/lib/*.la && \
+    # Strip binaries
+    # Ignore errors --> unbound-control-setup is a script
+    strip /opt/unbound/sbin/* > /dev/null 2>&1 || true && \
+    # Strip libraries
+    find /opt/unbound/lib -type f -name "*.so*" -exec strip --strip-unneeded {} +
 
 # Set workdir to var
 WORKDIR /var/unbound
@@ -137,9 +161,9 @@ WORKDIR /var/unbound
 # Download the root.hints and generate the root.key
 # Exit code 0 = anchor up to date, 1 = anchor updated --> both success
 RUN curl -sSL https://www.internic.net/domain/named.root -o /var/unbound/root.hints && \
-    /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || \
-    ANCHOR_EXIT="${?}"; \
-    if [ "${ANCHOR_EXIT}" -gt 1 ]; then echo "ERROR: Command unbound-anchor failed with exit code ${ANCHOR_EXIT}."; exit 1; fi && \
+    ANCHOR_EXIT=0 && \
+    { /opt/unbound/sbin/unbound-anchor -v -r /var/unbound/root.hints -a /var/unbound/root.key || ANCHOR_EXIT="${?}"; } && \
+    if [ "${ANCHOR_EXIT:-0}" -gt 1 ]; then echo "ERROR: Command unbound-anchor failed with exit code ${ANCHOR_EXIT}."; exit 1; fi && \
     # Move unbound.conf to unbound.conf.default
     mv /etc/unbound/unbound.conf /etc/unbound/unbound.conf.default
 
@@ -204,13 +228,10 @@ COPY --from=unbound-build --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" /etc
 COPY --from=unbound-build --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" /var/unbound /var/unbound
 
 # Copy the ngtcp2 library files, header files not needed at runtime
-COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
+COPY --from=ngtcp2-build /usr/local/lib/libngtcp2*.so* /usr/local/lib
 
-# Copy Files
-COPY --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" files /files
-
-# Set permissions for Unbound scripts
-RUN chmod +x /files/scripts/*.sh
+# Copy Files and set permissions (/files/scripts/*.sh need to be executable)
+COPY --chown="${UNBOUND_USER_UID}:${UNBOUND_USER_GID}" --chmod=755 files /files
 
 # Set build date argument here, because caching would break otherwise
 # It is set during the build process in the reusable workflow
