@@ -71,6 +71,12 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # Set workdir
 WORKDIR /tmp/unbound-build
 
+# Copy the ngtcp2 library files
+COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
+
+# Copy the ngtcp2 header files
+COPY --from=ngtcp2-build /usr/local/include /usr/local/include
+
 # Install build dependencies and download unbound source code
 RUN set -x && \
     apk add --no-cache --virtual .build-deps \
@@ -96,12 +102,6 @@ RUN set -x && \
     echo "$(cat "unbound-${UNBOUND_VERSION}.tar.gz.sha256")" "unbound-${UNBOUND_VERSION}.tar.gz" | sha256sum -c - && \
     # Extract the tarball
     tar -xzf "unbound-${UNBOUND_VERSION}.tar.gz"
-
-# Copy the ngtcp2 library files
-COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
-
-# Copy the ngtcp2 header files
-COPY --from=ngtcp2-build /usr/local/include /usr/local/include
 
 # Set workdir to the extracted Unbound directory
 WORKDIR /tmp/unbound-build/unbound-${UNBOUND_VERSION}
