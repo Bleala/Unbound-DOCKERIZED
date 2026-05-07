@@ -71,6 +71,7 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # Set workdir
 WORKDIR /tmp/unbound-build
 
+# Copy files before install, otherwise cache would break
 # Copy the ngtcp2 library files
 COPY --from=ngtcp2-build /usr/local/lib /usr/local/lib
 
