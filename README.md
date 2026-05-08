@@ -69,6 +69,7 @@ Platforms:
 
 * linux/amd64
 * linux/arm64
+* linux/arm/v7
 
 ---
 
@@ -405,7 +406,6 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 * Update workflow dependencies
 * Remove package pinning and stick to alpine image packages
 * Strip files for lower image size
-* Remove linux/arm/v7 build
 
 **Current Versions:**<br>
 
