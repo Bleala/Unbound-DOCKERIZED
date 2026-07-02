@@ -2,7 +2,7 @@
 ARG ALPINE_VERSION="3.23.4" \
     UNBOUND_USER="unbound" \
     UNBOUND_VERSION="1.25.0" \
-    NGTCP2_VERSION="1.22.1"
+    NGTCP2_VERSION="1.24.0"
 
 # -----------------------------------------------------------------------------------------------
 
