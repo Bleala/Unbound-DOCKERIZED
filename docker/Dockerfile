@@ -1,7 +1,7 @@
 # Global variables
 ARG ALPINE_VERSION="3.24.1" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.25.1" \
+    UNBOUND_VERSION="1.25.0" \
     NGTCP2_VERSION="1.24.0"
 
 # -----------------------------------------------------------------------------------------------
