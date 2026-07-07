@@ -401,7 +401,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 * Update Unbound to version 1.25.0
 * Update Alpine to version 3.24.1
-* Update ngtcp2 to version 1.22.1
+* Update ngtcp2 to version 1.24.0
 * Add Quic support
 * Update workflow dependencies
 * Remove package pinning and stick to alpine image packages
