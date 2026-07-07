@@ -409,7 +409,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 **Current Versions:**<br>
 
-* Unbound 1.25.0, Alpine 3.24.1
+* Unbound 1.25.0, Alpine 3.24.1, ngtcp2 1.24.0
 
 <details>
 <summary>Old Version History</summary><br>
