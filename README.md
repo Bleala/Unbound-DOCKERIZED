@@ -397,7 +397,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 ## Versions
 
-**1.25.0 - 05.05.2026:**
+**1.25.0 - 07.07.2026:**
 
 * Update Unbound to version 1.25.0
 * Update Alpine to version 3.24.1
