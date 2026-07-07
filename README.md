@@ -400,8 +400,8 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 **1.25.0 - 05.05.2026:**
 
 * Update Unbound to version 1.25.0
-* Update Alpine to version 3.23.4
-* Update ngtcp2 to version 1.22.1
+* Update Alpine to version 3.24.1
+* Update ngtcp2 to version 1.24.0
 * Add Quic support
 * Update workflow dependencies
 * Remove package pinning and stick to alpine image packages
@@ -409,7 +409,7 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 **Current Versions:**<br>
 
-* Unbound 1.25.0, Alpine 3.23.4
+* Unbound 1.25.0, Alpine 3.24.1, ngtcp2 1.24.0
 
 <details>
 <summary>Old Version History</summary><br>
