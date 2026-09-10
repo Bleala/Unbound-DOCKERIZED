@@ -397,16 +397,21 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 ## Versions
 
-**1.25.2 - 10.09.2026:**
+**1.26.0 - 10.09.2026:**
 
-* Update Unbound to version 1.25.2
+* Update Unbound to version 1.26.0
+* Update ngtcp2 to version 1.25.0
 
 **Current Versions:**<br>
 
-* Unbound 1.25.2, Alpine 3.24.1, ngtcp2 1.24.0
+* Unbound 1.26.0, Alpine 3.24.1, ngtcp2 1.25.0
 
 <details>
 <summary>Old Version History</summary><br>
+
+**1.25.2 - 10.09.2026:**
+
+* Update Unbound to version 1.25.2
 
 **1.25.1 - 10.09.2026:**
 
