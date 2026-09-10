@@ -397,6 +397,17 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 
 ## Versions
 
+**1.25.1 - 10.09.2026:**
+
+* Update Unbound to version 1.25.1
+
+**Current Versions:**<br>
+
+* Unbound 1.25.1, Alpine 3.24.1, ngtcp2 1.24.0
+
+<details>
+<summary>Old Version History</summary><br>
+
 **1.25.0 - 07.07.2026:**
 
 * Update Unbound to version 1.25.0
@@ -406,13 +417,6 @@ Feel free to create a PR with your changes and I will merge it, if it's ok.
 * Update workflow dependencies
 * Remove package pinning and stick to alpine image packages
 * Strip files for lower image size
-
-**Current Versions:**<br>
-
-* Unbound 1.25.0, Alpine 3.24.1, ngtcp2 1.24.0
-
-<details>
-<summary>Old Version History</summary><br>
 
 **1.24.2 - 13.01.2026:**
 
