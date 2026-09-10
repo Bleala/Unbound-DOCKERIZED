@@ -1,7 +1,7 @@
 # Global variables
 ARG ALPINE_VERSION="3.24.1" \
     UNBOUND_USER="unbound" \
-    UNBOUND_VERSION="1.25.0" \
+    UNBOUND_VERSION="1.25.1" \
     NGTCP2_VERSION="1.24.0"
 
 # -----------------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ ENV PATH="/opt/unbound/sbin:${PATH}" \
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD nslookup -type=NS -timeout=1 -retry=1 . 127.0.0.1 || exit 1
+  CMD ["/bin/sh", "-c", "nslookup -type=NS -timeout=1 -retry=1 . 127.0.0.1 || exit 1"]
 
 # Install runtime dependencies
 RUN apk add --no-cache \
